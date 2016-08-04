@@ -10,6 +10,8 @@ http://dun.163.com
 ├── TextCallbackAPIDemo.java　文本离线结果获取接口演示
 ├── ImageCheckAPIDemo.java　图片在线检测接口演示
 ├── ImageCallbackDemo.java 图片离线结果获取接口演示
+├── LiveVideoSubmitAPIDemo.java　直播流信息提交接口演示
+├── LiveVideoCallbackAPIDemo.java 直播流检测结果获取接口演示
 ├── HttpClient4Utils.java httpclient封装类
 └── SignatureUtils.java 签名方法封装类
 ```
