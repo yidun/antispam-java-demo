@@ -56,12 +56,8 @@ public class TextCheckAPIDemo {
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("content", "易盾测试内容！");
         params.put("dataOpType", "1");
-        params.put("ip", "123.115.77.137");
-
         params.put("dataType", "1");
-        params.put("parentDataId", "334d42e1-112f-4fc7-8fb7-c60542fc2018");
-        params.put("title", "易盾测试标题");
-        params.put("url", "http://www.xx.com/xxx.html");
+        params.put("ip", "123.115.77.137");
         params.put("account", "java@163.com");
         params.put("nickname", "没事瞎评论java");
         params.put("deviceType", "4");

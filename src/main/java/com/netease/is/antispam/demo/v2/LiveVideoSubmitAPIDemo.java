@@ -51,6 +51,7 @@ public class LiveVideoSubmitAPIDemo {
         params.put("url", "http://xxx.xxx.com/xxxx");
         params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
         params.put("callback", "{\"p\":\"xx\"}");
+        params.put("scFrequency", "5");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
