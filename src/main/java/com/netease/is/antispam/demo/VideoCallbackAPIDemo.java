@@ -3,7 +3,7 @@
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.v2;
+package com.netease.is.antispam.demo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class VideoCallbackAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务视频离线结果获取接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v2/video/callback/results";
+    private final static String API_URL = "https://api.aq.163.com/v3/video/callback/results";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
 
@@ -50,7 +50,7 @@ public class VideoCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v2");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -73,18 +73,27 @@ public class VideoCallbackAPIDemo {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String callback = jObject.get("callback").getAsString();
-                    JsonObject evidenceObjec = jObject.get("evidence").getAsJsonObject();
-                    JsonArray labelArray = jObject.get("labels").getAsJsonArray();
-                    if (labelArray.size() == 0) {// 检测正常
-                        System.out.println(String.format("正常, callback=%s, 证据信息：%s", callback, evidenceObjec));
-                    } else {
-                        for (JsonElement labelElement : labelArray) {
-                            JsonObject lObject = labelElement.getAsJsonObject();
-                            int label = lObject.get("label").getAsInt();
-                            int level = lObject.get("level").getAsInt();
-                            double rate = lObject.get("rate").getAsDouble();
-                            System.out.println(String.format("异常, callback=%s, 分类：%s, 证据信息：%s", callback, lObject,
-                                                             evidenceObjec));
+                    int videoLevel = jObject.get("level").getAsInt();
+                    if (videoLevel == 0) {
+                        System.out.println(String.format("正常, callback=%s", callback));
+                    } else if (videoLevel == 1 || videoLevel == 2) {
+                        JsonArray evidenceArray = jObject.get("evidences").getAsJsonArray();
+                        for (JsonElement evidenceElement : evidenceArray) {
+                            JsonObject eObject = evidenceElement.getAsJsonObject();
+                            long beginTime = eObject.get("beginTime").getAsLong();
+                            long endTime = eObject.get("endTime").getAsLong();
+                            int type = eObject.get("type").getAsInt();
+                            String url = eObject.get("url").getAsString();
+
+                            JsonArray labelArray = eObject.get("labels").getAsJsonArray();
+                            for (JsonElement labelElement : labelArray) {
+                                JsonObject lObject = labelElement.getAsJsonObject();
+                                int label = lObject.get("label").getAsInt();
+                                int level = lObject.get("level").getAsInt();
+                                double rate = lObject.get("rate").getAsDouble();
+                            }
+                            System.out.println(String.format("%s, callback=%s, 证据信息：%s, 证据分类：%s, ", videoLevel == 1 ? "不确定"
+                                            : "确定", callback, eObject, labelArray));
                         }
                     }
                 }
