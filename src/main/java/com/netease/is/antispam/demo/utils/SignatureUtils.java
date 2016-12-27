@@ -33,7 +33,7 @@ public class SignatureUtils {
         // 2. 按照排序拼接参数名与参数值
         StringBuffer paramBuffer = new StringBuffer();
         for (String key : keys) {
-            paramBuffer.append(key).append(params.get(key));
+            paramBuffer.append(key).append(params.get(key) == null ? "" : params.get(key));
         }
         // 3. 将secretKey拼接到最后
         paramBuffer.append(secretKey);
