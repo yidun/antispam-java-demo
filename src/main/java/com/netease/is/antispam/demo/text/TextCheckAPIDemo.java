@@ -3,7 +3,7 @@
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo;
+package com.netease.is.antispam.demo.text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +12,7 @@ import java.util.Random;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -34,9 +35,9 @@ public class TextCheckAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务文本在线检测接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v2/text/check";
+    private final static String API_URL = "https://api.aq.163.com/v3/text/check";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 2000, 2000, 2000);
 
     /**
      * 
@@ -48,18 +49,17 @@ public class TextCheckAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v2");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        params.put("content", "易盾测试内容！");
+        params.put("content", "易盾测试内容！v3接口! ");
         params.put("dataOpType", "1");
         params.put("dataType", "1");
         params.put("ip", "123.115.77.137");
         params.put("account", "java@163.com");
-        params.put("nickname", "没事瞎评论java");
         params.put("deviceType", "4");
         params.put("deviceId", "92B1E5AA-4C3D-4565-A8C2-86E297055088");
         params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
@@ -79,12 +79,21 @@ public class TextCheckAPIDemo {
         if (code == 200) {
             JsonObject resultObject = jObject.getAsJsonObject("result");
             int action = resultObject.get("action").getAsInt();
-            if (action == 1) {
-                System.out.println("正常内容，通过");
+            String taskId = resultObject.get("taskId").getAsString();
+            JsonArray labelArray = resultObject.getAsJsonArray("labels");
+            /*for (JsonElement labelElement : labelArray) {
+                JsonObject lObject = labelElement.getAsJsonObject();
+                int label = lObject.get("label").getAsInt();
+                int level = lObject.get("level").getAsInt();
+                JsonObject detailsObject=lObject.getAsJsonObject("details");
+                JsonArray hintArray=detailsObject.getAsJsonArray("hint");
+            }*/
+            if (action == 0) {
+                System.out.println(String.format("taskId=%s，文本机器检测结果：通过", taskId));
+            } else if (action == 1) {
+                System.out.println(String.format("taskId=%s，文本机器检测结果：嫌疑，需人工复审，分类信息如下：%s", taskId, labelArray.toString()));
             } else if (action == 2) {
-                System.out.println("垃圾内容，删除");
-            } else if (action == 3) {
-                System.out.println("嫌疑内容");
+                System.out.println(String.format("taskId=%s，文本机器检测结果：不通过，分类信息如下：%s", taskId, labelArray.toString()));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));

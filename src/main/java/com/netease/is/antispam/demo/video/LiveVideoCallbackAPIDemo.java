@@ -3,7 +3,7 @@
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo;
+package com.netease.is.antispam.demo.video;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -3,7 +3,7 @@
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo;
+package com.netease.is.antispam.demo.image;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +36,9 @@ public class ImageCheckAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务图片在线检测接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v2/image/check";
+    private final static String API_URL = "https://api.aq.163.com/v3/image/check";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
      * 
@@ -50,7 +50,7 @@ public class ImageCheckAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v2");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -91,14 +91,31 @@ public class ImageCheckAPIDemo {
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 String name = jObject.get("name").getAsString();
-                System.out.println(name);
+                String taskId = jObject.get("taskId").getAsString();
                 JsonArray labelArray = jObject.get("labels").getAsJsonArray();
+                System.out.println(String.format("taskId=%s，name=%s，labels：", taskId, name));
+                int maxLevel = -1;
+                // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
                 for (JsonElement labelElement : labelArray) {
                     JsonObject lObject = labelElement.getAsJsonObject();
                     int label = lObject.get("label").getAsInt();
                     int level = lObject.get("level").getAsInt();
                     double rate = lObject.get("rate").getAsDouble();
                     System.out.println(String.format("label:%s, level=%s, rate=%s", label, level, rate));
+                    maxLevel = level > maxLevel ? level : maxLevel;
+                }
+                switch (maxLevel) {
+                    case 0:
+                        System.out.println("#图片机器检测结果：最高等级为\"正常\"\n");
+                        break;
+                    case 1:
+                        System.out.println("#图片机器检测结果：最高等级为\"嫌疑\"\n");
+                        break;
+                    case 2:
+                        System.out.println("#图片机器检测结果：最高等级为\"确定\"\n");
+                        break;
+                    default:
+                        break;
                 }
             }
         } else {

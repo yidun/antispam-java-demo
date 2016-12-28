@@ -1,9 +1,9 @@
 /*
- * @(#) VideoCallbackAPIDemo.java 2016年8月23日
+ * @(#) TextCallbackAPIDemo.java 2016年3月15日
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo;
+package com.netease.is.antispam.demo.text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,25 +20,25 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务视频离线结果获取接口API示例，该示例依赖以下jar包：
+ * 调用易盾反垃圾云服务文本离线检测结果获取接口API示例，该示例依赖以下jar包：
  * 1. httpclient，用于发送http请求
  * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
- * @author hzdingyong
- * @version 2016年8月23日
+ * @author hzgaomin
+ * @version 2016年2月3日
  */
-public class VideoCallbackAPIDemo {
+public class TextCallbackAPIDemo {
     /** 产品密钥ID，产品标识 */
     private final static String SECRETID = "your_secret_id";
     /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
     private final static String SECRETKEY = "your_secret_key";
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务视频离线结果获取接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v3/video/callback/results";
+    /** 易盾反垃圾云服务文本离线检测结果获取接口地址 */
+    private final static String API_URL = "https://api.aq.163.com/v3/text/callback/results";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
      * 
@@ -68,38 +68,31 @@ public class VideoCallbackAPIDemo {
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
             if (resultArray.size() == 0) {
-                System.out.println("暂无回调数据");
-            } else {
-                for (JsonElement jsonElement : resultArray) {
-                    JsonObject jObject = jsonElement.getAsJsonObject();
-                    String callback = jObject.get("callback").getAsString();
-                    int videoLevel = jObject.get("level").getAsInt();
-                    if (videoLevel == 0) {
-                        System.out.println(String.format("正常, callback=%s", callback));
-                    } else if (videoLevel == 1 || videoLevel == 2) {
-                        JsonArray evidenceArray = jObject.get("evidences").getAsJsonArray();
-                        for (JsonElement evidenceElement : evidenceArray) {
-                            JsonObject eObject = evidenceElement.getAsJsonObject();
-                            long beginTime = eObject.get("beginTime").getAsLong();
-                            long endTime = eObject.get("endTime").getAsLong();
-                            int type = eObject.get("type").getAsInt();
-                            String url = eObject.get("url").getAsString();
-
-                            JsonArray labelArray = eObject.get("labels").getAsJsonArray();
-                            for (JsonElement labelElement : labelArray) {
-                                JsonObject lObject = labelElement.getAsJsonObject();
-                                int label = lObject.get("label").getAsInt();
-                                int level = lObject.get("level").getAsInt();
-                                double rate = lObject.get("rate").getAsDouble();
-                            }
-                            System.out.println(String.format("%s, callback=%s, 证据信息：%s, 证据分类：%s, ", videoLevel == 1 ? "不确定"
-                                            : "确定", callback, eObject, labelArray));
-                        }
-                    }
+                System.out.println("暂时没有文本人工复审结果需要获取，请稍后重试！");
+            }
+            for (JsonElement jsonElement : resultArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                int action = jObject.get("action").getAsInt();
+                String taskId = jObject.get("taskId").getAsString();
+                String callback = jObject.get("callback").getAsString();
+                JsonArray labelArray = jObject.getAsJsonArray("labels");
+                /*for (JsonElement labelElement : labelArray) {
+                    JsonObject lObject = labelElement.getAsJsonObject();
+                    int label = lObject.get("label").getAsInt();
+                    int level = lObject.get("level").getAsInt();
+                    JsonObject detailsObject=lObject.getAsJsonObject("details");
+                    JsonArray hintArray=detailsObject.getAsJsonArray("hint");
+                }*/
+                if (action == 0) {
+                    System.out.println(String.format("taskId=%s，callback=%s，文本人工复审结果：通过", taskId, callback));
+                } else if (action == 2) {
+                    System.out.println(String.format("taskId=%s，callback=%s，文本人工复审结果：不通过，分类信息如下：%s", taskId, callback,
+                                                     labelArray.toString()));
                 }
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
+
     }
 }
