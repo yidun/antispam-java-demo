@@ -93,7 +93,7 @@ public class TextQueryByTaskIdsDemo {
                 if (action == 0) {
                     System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：通过", taskId, status, callback));
                 } else if (action == 2) {
-                    System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：不通过，分类信息如下：%s", taskId, callback,
+                    System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：不通过，分类信息如下：%s", taskId,status, callback,
                                                      labelArray.toString()));
                 }
             }
