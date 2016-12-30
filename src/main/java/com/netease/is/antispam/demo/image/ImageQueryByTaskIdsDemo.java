@@ -78,7 +78,7 @@ public class ImageQueryByTaskIdsDemo {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
-                String name = jObject.get("name").getAsString();
+                String name = jObject.get("name").isJsonNull() ? "" : jObject.get("name").getAsString();
                 String taskId = jObject.get("taskId").getAsString();
                 int status = jObject.get("status").getAsInt();
                 JsonArray labelArray = jObject.get("labels").getAsJsonArray();

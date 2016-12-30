@@ -81,7 +81,7 @@ public class TextQueryByTaskIdsDemo {
                 int action = jObject.get("action").getAsInt();
                 String taskId = jObject.get("taskId").getAsString();
                 int status = jObject.get("status").getAsInt();
-                String callback = jObject.get("callback").getAsString();
+                String callback = jObject.get("callback").isJsonNull() ? "" : jObject.get("callback").getAsString();
                 JsonArray labelArray = jObject.getAsJsonArray("labels");
                 /*for (JsonElement labelElement : labelArray) {
                     JsonObject lObject = labelElement.getAsJsonObject();
