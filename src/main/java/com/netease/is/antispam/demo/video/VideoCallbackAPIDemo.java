@@ -72,6 +72,11 @@ public class VideoCallbackAPIDemo {
             } else {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
+                    int status = jObject.get("status").getAsInt();
+                    if(status!=0){//异常，异常码定义见官网文档
+                        System.out.println("视频异常，status="+status);
+                        continue;
+                    }
                     String callback = jObject.get("callback").getAsString();
                     int videoLevel = jObject.get("level").getAsInt();
                     if (videoLevel == 0) {
