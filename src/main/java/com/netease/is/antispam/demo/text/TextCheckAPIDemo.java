@@ -56,7 +56,6 @@ public class TextCheckAPIDemo {
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("content", "易盾测试内容！v3接口! ");
-        params.put("dataOpType", "1");
         params.put("dataType", "1");
         params.put("ip", "123.115.77.137");
         params.put("account", "java@163.com");
