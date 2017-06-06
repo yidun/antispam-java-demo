@@ -70,7 +70,7 @@ public class VideoQueryByTaskIdsDemo {
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 int status = jObject.get("status").getAsInt();
-                if(status!=0){//0:正常，10：检测中，20：不是7天内数据，30：taskId不存在，110：请求重复，120：参数错误，130：解析错误，140：数据类型错误
+                if(status!=0){//-1:提交检测失败，0:正常，10：检测中，20：不是7天内数据，30：taskId不存在，110：请求重复，120：参数错误，130：解析错误，140：数据类型错误
                     System.out.println("获取结果异常，status="+status);
                     continue;
                 }
