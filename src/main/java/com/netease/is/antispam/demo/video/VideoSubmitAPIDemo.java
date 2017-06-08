@@ -34,7 +34,7 @@ public class VideoSubmitAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务视频信息提交接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v2/video/submit";
+    private final static String API_URL = "https://api.aq.163.com/v3/video/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
 
@@ -43,7 +43,7 @@ public class VideoSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v2");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -65,11 +65,14 @@ public class VideoSubmitAPIDemo {
         int code = jObject.get("code").getAsInt();
         String msg = jObject.get("msg").getAsString();
         if (code == 200) {
-            boolean result = jObject.get("result").getAsBoolean();
-            if (result) {
-                System.out.println("推送成功!");
+            JsonObject result = jObject.getAsJsonObject("result");
+            // status 0:成功，1:失败
+            int status = result.get("status").getAsInt();
+            String taskId = result.get("taskId").getAsString();
+            if (status == 0) {
+                System.out.println(String.format("推送成功!taskId=%s", taskId));
             } else {
-                System.out.println("推送失败!");
+                System.out.println(String.format("推送失败!taskId=%s", taskId));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
