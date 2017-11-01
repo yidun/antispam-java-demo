@@ -58,9 +58,9 @@ public class ImageCheckAPIDemo {
         JsonArray jsonArray = new JsonArray();
         // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
         JsonObject image1 = new JsonObject();
-        image1.addProperty("name", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        image1.addProperty("name", "http://nos.netease.com/yidun/2-0-0-4038669695e344a4addc546f772e90a5.jpg");
         image1.addProperty("type", 1);
-        image1.addProperty("data", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        image1.addProperty("data", "http://nos.netease.com/yidun/2-0-0-4038669695e344a4addc546f772e90a5.jpg");
         jsonArray.add(image1);
 
         // 传图片base64编码进行检测，name结构产品自行设计，用于唯一定位该图片数据
