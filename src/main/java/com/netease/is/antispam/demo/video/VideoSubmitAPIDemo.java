@@ -34,7 +34,7 @@ public class VideoSubmitAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务视频信息提交接口地址 */
-    private final static String API_URL = "https://api.aq.163.com/v3/video/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v3/video/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
 
