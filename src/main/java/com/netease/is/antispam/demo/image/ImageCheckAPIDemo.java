@@ -50,7 +50,7 @@ public class ImageCheckAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3.1");
+        params.put("version", "v3.2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -91,9 +91,10 @@ public class ImageCheckAPIDemo {
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 String name = jObject.get("name").getAsString();
+                int status = jObject.get("status").getAsInt();
                 String taskId = jObject.get("taskId").getAsString();
                 JsonArray labelArray = jObject.get("labels").getAsJsonArray();
-                System.out.println(String.format("taskId=%s，name=%s，labels：", taskId, name));
+                System.out.println(String.format("taskId=%s，status=%s，name=%s，labels：", taskId, status, name));
                 int maxLevel = -1;
                 // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
                 for (JsonElement labelElement : labelArray) {
