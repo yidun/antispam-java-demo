@@ -1,27 +1,62 @@
 /*
  * @(#) SignatureUtils.java 2016年2月2日
- * 
+ *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
 package com.netease.is.antispam.demo.utils;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * 生成及验证签名信息工具类
+ *
  * @author hzgaomin
  * @version 2016年2月2日
  */
 public class SignatureUtils {
 
     /**
+     * 通过HttpServletRequest做签名验证
+     *
+     * @param request
+     * @param secretid
+     * @param secretkey
+     * @param businessid
+     * @return
+     */
+    public static boolean verifySignature(HttpServletRequest request, String secretid, String secretkey, String businessid)
+            throws UnsupportedEncodingException {
+        String secretId = request.getParameter("secretId");
+        String businessId = request.getParameter("businessId");
+        String signature = request.getParameter("signature");
+        if (StringUtils.isEmpty(secretId) || StringUtils.isEmpty(signature)) {
+            // 签名参数为空，直接返回失败
+            return false;
+        }
+        Map<String, String> params = new HashMap<>();
+        for (String paramName : request.getParameterMap().keySet()) {
+            if (!"signature".equals(paramName)) {
+                params.put(paramName, request.getParameter(paramName));
+            }
+        }
+        // SECRETKEY:产品私有密钥 SECRETID:产品密钥ID BUSINESSID:业务ID,开通服务时，易盾会提供相关密钥信息
+        String serverSignature = genSignature(secretkey, params);
+        // 客户根据需要确认是否鉴权是否要精确到业务维度，不需要则去掉businessid.equals(businessId)
+        return signature.equals(serverSignature) && secretid.equals(secretId) && businessid.equals(businessId);
+    }
+
+    /**
      * 生成签名信息
+     *
      * @param secretKey 产品私钥
-     * @param params 接口请求参数名和参数值map，不包括signature参数名
+     * @param params    接口请求参数名和参数值map，不包括signature参数名
      * @return
      * @throws UnsupportedEncodingException
      */
