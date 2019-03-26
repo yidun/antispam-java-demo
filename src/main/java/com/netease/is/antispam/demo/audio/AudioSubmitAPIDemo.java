@@ -58,6 +58,8 @@ public class AudioSubmitAPIDemo {
 
         // 2.设置私有参数
         params.put("url", "http://xxx.xxx.com/xxxx");
+        // 主动回调地址url,如果设置了则走主动回调逻辑
+        //params.put("callbackUrl", "http://***");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
