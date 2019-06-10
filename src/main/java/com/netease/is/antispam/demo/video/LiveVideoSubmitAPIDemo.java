@@ -59,10 +59,10 @@ public class LiveVideoSubmitAPIDemo {
         // 2.设置私有参数
         params.put("url", "http://xxx.xxx.com/xxxx");
         params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
-        params.put("callback", "{\"p\":\"xx\"}");
-        params.put("scFrequency", "5");
+        // params.put("callback", "{\"p\":\"xx\"}");
+        // params.put("scFrequency", "5");
         // 主动回调地址url,如果设置了则走主动回调逻辑
-        //params.put("callbackUrl", "http://***");
+        // params.put("callbackUrl", "http://***");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
