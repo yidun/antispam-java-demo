@@ -53,12 +53,12 @@ public class FileSubmitApiDemo {
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("url", FILE_URL);
-        params.put("dataType", "1");
-        params.put("checkFlag", "3");
-        params.put("ip", "123.115.77.137");
-        params.put("account", "java@163.com");
-        params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        params.put("publishTime", String.valueOf(System.currentTimeMillis()));
+        // params.put("dataType", "1");
+        // params.put("checkFlag", "3");
+        // params.put("ip", "123.115.77.137");
+        // params.put("account", "java@163.com");
+        // params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
+        // params.put("publishTime", String.valueOf(System.currentTimeMillis()));
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
