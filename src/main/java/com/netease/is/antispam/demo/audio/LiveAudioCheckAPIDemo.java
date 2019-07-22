@@ -1,31 +1,30 @@
 /*
- * @(#) VideoSubmitAPIDemo.java 2016年8月23日
+ * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
  *
- * Copyright 2010 NetEase.com, Inc. All rights reserved.
+ * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.video;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
+package com.netease.is.antispam.demo.audio;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+
 /**
- * 调用易盾反垃圾云服务视频信息提交接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾云服务检测直播语音接口API示例
  *
- * @author hzdingyong
- * @version 2016年8月23日
+ * @author maxiaofeng
+ * @version 2019-04-11
  */
-public class VideoSubmitAPIDemo {
+public class LiveAudioCheckAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -39,28 +38,30 @@ public class VideoSubmitAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务视频信息提交接口地址
+     * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/video/submit";
+    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3");
+        params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
         params.put("url", "http://xxx.xxx.com/xxxx");
-        params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
-        // params.put("callback", "{\"p\":\"xx\"}");
-        // params.put("scFrequency", "5");
         // 主动回调地址url,如果设置了则走主动回调逻辑
         // params.put("callbackUrl", "http://***");
 

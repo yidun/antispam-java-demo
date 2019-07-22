@@ -83,8 +83,8 @@ public class ImageCheckAPIDemo {
         jsonArray.add(image2);
 
         params.put("images", jsonArray.toString());
-        params.put("account", "java@163.com");
-        params.put("ip", "123.115.77.137");
+        // params.put("account", "java@163.com");
+        // params.put("ip", "123.115.77.137");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
