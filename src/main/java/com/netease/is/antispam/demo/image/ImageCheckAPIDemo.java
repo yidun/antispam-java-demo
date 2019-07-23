@@ -147,7 +147,7 @@ public class ImageCheckAPIDemo {
                     JsonObject lObject = detail.getAsJsonObject();
                     String content = lObject.get("content").getAsString();
                     JsonArray lineContents = lObject.getAsJsonArray("lineContents");
-                    System.out.println(String.format("识别ocr文本内容:%s, ocr片段及价格信息:%s", content, lineContents.toString()));
+                    System.out.println(String.format("识别ocr文本内容:%s, ocr片段及坐标信息:%s", content, lineContents.toString()));
                 }
             }
         } else {
