@@ -5,23 +5,22 @@
  */
 package com.netease.is.antispam.demo.image;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
- * 调用易盾反垃圾云服务图片在线检测接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务图片在线检测接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  *
  * @author hzgaomin
@@ -43,7 +42,7 @@ public class ImageCheckAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/image/check";
+    private final static String API_URL = "https://as.dun.163yun.com/v4/image/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -54,11 +53,11 @@ public class ImageCheckAPIDemo {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3.2");
+        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -66,11 +65,11 @@ public class ImageCheckAPIDemo {
         JsonArray jsonArray = new JsonArray();
         // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
         JsonObject image1 = new JsonObject();
-        image1.addProperty("name", "http://nos.netease.com/yidun/2-0-0-4038669695e344a4addc546f772e90a5.jpg");
+        image1.addProperty("name", "https://nos.netease.com/yidun/2-0-0-a6133509763d4d6eac881a58f1791976.jpg");
         image1.addProperty("type", 1);
         // 主动回调地址url,如果设置了则走主动回调逻辑
         // image1.addProperty("callbackUrl", "http://***");
-        image1.addProperty("data", "http://nos.netease.com/yidun/2-0-0-4038669695e344a4addc546f772e90a5.jpg");
+        image1.addProperty("data", "https://nos.netease.com/yidun/2-0-0-a6133509763d4d6eac881a58f1791976.jpg");
         jsonArray.add(image1);
 
         // 传图片base64编码进行检测，name结构产品自行设计，用于唯一定位该图片数据
@@ -99,25 +98,29 @@ public class ImageCheckAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("result");
-            for (JsonElement jsonElement : resultArray) {
+            // 图片反垃圾结果
+            JsonArray antispamArray = resultObject.getAsJsonArray("antispam");
+            for (JsonElement jsonElement : antispamArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 String name = jObject.get("name").getAsString();
                 int status = jObject.get("status").getAsInt();
                 String taskId = jObject.get("taskId").getAsString();
+                // 图片维度结果
+                int action = jObject.get("action").getAsInt();
                 JsonArray labelArray = jObject.get("labels").getAsJsonArray();
-                System.out.println(String.format("taskId=%s，status=%s，name=%s，labels：", taskId, status, name));
-                int maxLevel = -1;
+                System.out
+                        .println(String.format("taskId=%s，status=%s，name=%s，action=%s", taskId, status, name, action));
                 // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
                 for (JsonElement labelElement : labelArray) {
                     JsonObject lObject = labelElement.getAsJsonObject();
                     int label = lObject.get("label").getAsInt();
                     int level = lObject.get("level").getAsInt();
                     double rate = lObject.get("rate").getAsDouble();
-                    System.out.println(String.format("label:%s, level=%s, rate=%s", label, level, rate));
-                    maxLevel = level > maxLevel ? level : maxLevel;
+                    JsonArray subLabels = lObject.getAsJsonArray("subLabels");
+                    System.out.println(String.format("label:%s, level=%s, rate=%s, subLabels=%s", label, level, rate,
+                            subLabels.toString()));
                 }
-                switch (maxLevel) {
+                switch (action) {
                     case 0:
                         System.out.println("#图片机器检测结果：最高等级为\"正常\"\n");
                         break;
@@ -129,6 +132,22 @@ public class ImageCheckAPIDemo {
                         break;
                     default:
                         break;
+                }
+            }
+            // 图片OCR结果
+            JsonArray ocrArray = resultObject.getAsJsonArray("ocr");
+            for (JsonElement jsonElement : ocrArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String name = jObject.get("name").getAsString();
+                String taskId = jObject.get("taskId").getAsString();
+                JsonArray details = jObject.get("details").getAsJsonArray();
+                System.out.println(String.format("taskId=%s,name=%s", taskId, name));
+                // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
+                for (JsonElement detail : details) {
+                    JsonObject lObject = detail.getAsJsonObject();
+                    String content = lObject.get("content").getAsString();
+                    JsonArray lineContents = lObject.getAsJsonArray("lineContents");
+                    System.out.println(String.format("识别ocr文本内容:%s, ocr片段及坐标信息:%s", content, lineContents.toString()));
                 }
             }
         } else {
