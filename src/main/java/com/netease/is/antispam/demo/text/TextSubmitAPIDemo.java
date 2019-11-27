@@ -3,18 +3,15 @@
  * 
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.video;
+package com.netease.is.antispam.demo.text;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,29 +20,28 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务直播视频结果查询接口API示例，该示例依赖以下jar包：
+ * 调用易盾反垃圾云服务文本批量提交接口API示例，该示例依赖以下jar包：
  * 1. httpclient，用于发送http请求
  * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
- * @author habaijianwei
- * @version 2019年09月10日
+ * @author hzgaomin
+ * @version 2016年2月3日
  */
-public class LiveVideoQueryByTaskIdsDemo {
-
+public class TextSubmitAPIDemo {
     /** 产品密钥ID，产品标识 */
     private final static String SECRETID = "your_secret_id";
     /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
     private final static String SECRETKEY = "your_secret_key";
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务点播查询检测结果获取接口地址 */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/livevideo/query/task";
+    /** 易盾反垃圾云服务文本离线检测结果获取接口地址 */
+    private final static String API_URL = "https://as.dun.163yun.com/v1/text/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
-     *
+     * 
      * @param args
      * @throws Exception
      */
@@ -59,10 +55,21 @@ public class LiveVideoQueryByTaskIdsDemo {
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        Set<String> taskIds = new HashSet<String>();
-        taskIds.add("c679d93d4a8d411cbe3454214d4b1fd7");
-        taskIds.add("49800dc7877f4b2a9d2e1dec92b988b6");
-        params.put("taskIds", new Gson().toJson(taskIds));
+        JsonArray textArray = new JsonArray();
+        //dataId结构产品自行设计，用于唯一定位该文本数据
+        JsonObject text1 = new JsonObject();
+        text1.addProperty("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
+        text1.addProperty("content", "易盾测试内容！v1接口!");
+        text1.addProperty("action","0");
+        textArray.add(text1);
+
+        JsonObject text2 = new JsonObject();
+        text2.addProperty("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691767");
+        text2.addProperty("content", "批量提交内容！v1接口!");
+        text2.addProperty("action","1");
+        textArray.add(text2);
+
+        params.put("texts", textArray.toString());
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -79,16 +86,9 @@ public class LiveVideoQueryByTaskIdsDemo {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
-                // 直播视频uuid
+                String dataId = jObject.get("dataId").getAsString();
                 String taskId = jObject.get("taskId").getAsString();
-                // 直播状态, 101:直播中，102：直播结束
-                int status = jObject.get("status").getAsInt();
-                // 回调标识
-                String callback = jObject.get("callback").getAsString();
-                // 直播检测状态(0:检测成功，10：检测中，110：请求重复，120：参数错误，130：解析错误，140：数据类型错误，150：并发超限)
-                int callbackStatus = jObject.get("callbackStatus").getAsInt();
-                // 过期状态（20:直播不是七天内的数据，30：直播taskId不存在）
-                int expireStatus = jObject.get("expireStatus").getAsInt();
+                System.out.println(String.format("dataId=%s，文本提交返回taskId:%s", dataId, taskId));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
