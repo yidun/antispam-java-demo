@@ -8,6 +8,8 @@ http://dun.163.com
 .
 ├── TextCheckAPIDemo.java 文本在线检测接口演示
 ├── TextCallbackAPIDemo.java　文本离线结果获取接口演示
+├── TextQueryByTaskIdsDemo.java　文本检测结果查询接口演示
+├── TextSubmitAPIDemo.java　文本批量提交接口演示
 ├── ImageCheckAPIDemo.java　图片在线检测接口演示
 ├── ImageCallbackDemo.java 图片离线结果获取接口演示
 ├── AudioSubmitAPIDemo.java 点播语音在线检测提交接口演示
@@ -16,6 +18,12 @@ http://dun.163.com
 ├── LiveAudioCallbackAPIDemo.java 直播语音检测结果获取接口演示
 ├── LiveVideoSubmitAPIDemo.java　直播流信息提交接口演示
 ├── LiveVideoCallbackAPIDemo.java 直播流检测结果获取接口演示
+├── LiveVideoQueryByTaskIdsDemo.java 直播视频结果查询接口演示
+├── LiveWallSubmitAPIDemo.java 直播电视墙信息提交接口演示
+├── LiveWallCallbackAPIDemo.java 直播电视墙检测结果获取接口演示
+├── VideoSubmitAPIDemo.java　视频点播信息提交接口演示
+├── VideoCallbackAPIDemo.java 视频点播检测结果获取接口演示
+├── VideoQueryByTaskIdsDemo.java 视频点播结果查询接口演示
 ├── FileSubmitApiDemo.java 文档解决方案在线检测提交接口演示
 ├── FileCallbackApiDemo.java 文档解决方案检测结果获取接口演示
 ├── VideoSolutionSubmitApiDemo.java 点播音视频解决方案在线检测提交接口演示

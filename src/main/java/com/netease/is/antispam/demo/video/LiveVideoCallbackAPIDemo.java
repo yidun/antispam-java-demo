@@ -69,18 +69,22 @@ public class LiveVideoCallbackAPIDemo {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
+                String taskId = jObject.get("taskId").getAsString();
                 String callback = jObject.get("callback").getAsString();
                 JsonObject evidenceObjec = jObject.get("evidence").getAsJsonObject();
                 JsonArray labelArray = jObject.get("labels").getAsJsonArray();
-                if (labelArray.size() == 0) {// 检测正常
-                    System.out.println(String.format("正常, callback=%s, 证据信息：%s", callback, evidenceObjec));
+                if (null != labelArray && labelArray.size() == 0) {// 检测正常
+                    System.out.println(
+                            String.format("正常, taskId:%s, callback=%s, 证据信息：%s", taskId, callback, evidenceObjec));
                 } else {
                     for (JsonElement labelElement : labelArray) {
                         JsonObject lObject = labelElement.getAsJsonObject();
                         int label = lObject.get("label").getAsInt();
                         int level = lObject.get("level").getAsInt();
                         double rate = lObject.get("rate").getAsDouble();
-                        System.out.println(String.format("异常, callback=%s, 分类：%s, 证据信息：%s", callback, lObject, evidenceObjec));
+                        System.out.println(
+                                String.format("异常, taskId:%s, callback=%s, 分类：%s, 证据信息：%s", taskId, callback, lObject,
+                                        evidenceObjec));
                     }
                 }
             }
