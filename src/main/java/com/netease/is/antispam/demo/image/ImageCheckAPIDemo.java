@@ -103,35 +103,41 @@ public class ImageCheckAPIDemo {
             for (JsonElement jsonElement : antispamArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 String name = jObject.get("name").getAsString();
-                int status = jObject.get("status").getAsInt();
                 String taskId = jObject.get("taskId").getAsString();
-                // 图片维度结果
-                int action = jObject.get("action").getAsInt();
-                JsonArray labelArray = jObject.get("labels").getAsJsonArray();
-                System.out
-                        .println(String.format("taskId=%s，status=%s，name=%s，action=%s", taskId, status, name, action));
-                // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
-                for (JsonElement labelElement : labelArray) {
-                    JsonObject lObject = labelElement.getAsJsonObject();
-                    int label = lObject.get("label").getAsInt();
-                    int level = lObject.get("level").getAsInt();
-                    double rate = lObject.get("rate").getAsDouble();
-                    JsonArray subLabels = lObject.getAsJsonArray("subLabels");
-                    System.out.println(String.format("label:%s, level=%s, rate=%s, subLabels=%s", label, level, rate,
-                            subLabels.toString()));
-                }
-                switch (action) {
-                    case 0:
-                        System.out.println("#图片机器检测结果：最高等级为\"正常\"\n");
-                        break;
-                    case 1:
-                        System.out.println("#图片机器检测结果：最高等级为\"嫌疑\"\n");
-                        break;
-                    case 2:
-                        System.out.println("#图片机器检测结果：最高等级为\"确定\"\n");
-                        break;
-                    default:
-                        break;
+                int status = jObject.get("status").getAsInt();
+                // 图片检测状态码，定义为：0：检测成功，610：图片下载失败，620：图片格式错误，630：其它
+                if (0 == status) {
+                    // 图片维度结果
+                    int action = jObject.get("action").getAsInt();
+                    JsonArray labelArray = jObject.get("labels").getAsJsonArray();
+                    System.out.println(
+                            String.format("taskId=%s，status=%s，name=%s，action=%s", taskId, status, name, action));
+                    // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
+                    for (JsonElement labelElement : labelArray) {
+                        JsonObject lObject = labelElement.getAsJsonObject();
+                        int label = lObject.get("label").getAsInt();
+                        int level = lObject.get("level").getAsInt();
+                        double rate = lObject.get("rate").getAsDouble();
+                        JsonArray subLabels = lObject.getAsJsonArray("subLabels");
+                        System.out.println(String.format("label:%s, level=%s, rate=%s, subLabels=%s", label, level,
+                                rate, subLabels.toString()));
+                    }
+                    switch (action) {
+                        case 0:
+                            System.out.println("#图片机器检测结果：最高等级为\"正常\"\n");
+                            break;
+                        case 1:
+                            System.out.println("#图片机器检测结果：最高等级为\"嫌疑\"\n");
+                            break;
+                        case 2:
+                            System.out.println("#图片机器检测结果：最高等级为\"确定\"\n");
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    // status对应失败状态码：610：图片下载失败，620：图片格式错误，630：其它
+                    System.out.println(String.format("图片检测失败，taskId=%s，status=%s，name=%s", taskId, status, name));
                 }
             }
             // 图片OCR结果
@@ -142,12 +148,28 @@ public class ImageCheckAPIDemo {
                 String taskId = jObject.get("taskId").getAsString();
                 JsonArray details = jObject.get("details").getAsJsonArray();
                 System.out.println(String.format("taskId=%s,name=%s", taskId, name));
-                // 产品需根据自身需求，自行解析处理，本示例只是简单判断分类级别
+                // 产品需根据自身需求，自行解析处理，本示例只是简单输出ocr结果信息
                 for (JsonElement detail : details) {
                     JsonObject lObject = detail.getAsJsonObject();
                     String content = lObject.get("content").getAsString();
                     JsonArray lineContents = lObject.getAsJsonArray("lineContents");
                     System.out.println(String.format("识别ocr文本内容:%s, ocr片段及坐标信息:%s", content, lineContents.toString()));
+                }
+            }
+            // 图片人脸检测结果
+            JsonArray faceArray = resultObject.getAsJsonArray("face");
+            for (JsonElement jsonElement : faceArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String name = jObject.get("name").getAsString();
+                String taskId = jObject.get("taskId").getAsString();
+                JsonArray details = jObject.get("details").getAsJsonArray();
+                System.out.println(String.format("taskId=%s,name=%s", taskId, name));
+                // 产品需根据自身需求，自行解析处理，本示例只是简单输出人脸结果信息
+                for (JsonElement detail : details) {
+                    JsonObject lObject = detail.getAsJsonObject();
+                    int faceNumber = lObject.get("faceNumber").getAsInt();
+                    JsonArray faceContents = lObject.getAsJsonArray("faceContents");
+                    System.out.println(String.format("识别人脸数量:%s, 人物信息及坐标信息:%s", faceNumber, faceContents.toString()));
                 }
             }
         } else {
