@@ -43,7 +43,7 @@ public class AudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务音频离线结果获取接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/audio/callback/results";
+    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -58,7 +58,7 @@ public class AudioCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v1");
+        params.put("version", "v3.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -74,27 +74,33 @@ public class AudioCallbackAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("result");
+            JsonArray resultArray = resultObject.getAsJsonArray("antispam");
             if (resultArray.size() == 0) {
-                System.out.println("暂无回调数据");
+                System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
-                    int action = jObject.get("action").getAsInt();
                     String taskId = jObject.get("taskId").getAsString();
-                    JsonArray labelArray = jObject.getAsJsonArray("labels");
-                    /*for (JsonElement labelElement : labelArray) {
-                        JsonObject lObject = labelElement.getAsJsonObject();
-                        int label = lObject.get("label").getAsInt();
-                        int level = lObject.get("level").getAsInt();
-                        JsonObject detailsObject=lObject.getAsJsonObject("details");
-                        JsonArray hintArray=detailsObject.getAsJsonArray("hint");
-                    }*/
-                    if (action == 0) {
-                        System.out.println(String.format("callback=%s，结果：通过", taskId));
-                    } else if (action == 2) {
-                        System.out.println(String.format("callback=%s，结果：不通过，分类信息如下：%s", taskId,
-                                labelArray.toString()));
+                    int asrStatus = jObject.get("asrStatus").getAsInt();
+                    if (asrStatus == 4) {
+                        int asrResult = jObject.get("asrResult").getAsInt();
+                        System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
+                    } else {
+                        int action = jObject.get("action").getAsInt();
+                        JsonArray labelArray = jObject.getAsJsonArray("labels");
+                        if (action == 0) {
+                            System.out.println(String.format("taskId=%s，结果：通过", taskId));
+                        } else if (action == 1 || action == 2) {
+                            // for (JsonElement labelElement : labelArray) {
+                            // 	JsonObject lObject = labelElement.getAsJsonObject();
+                            // 	int label = lObject.get("label").getAsInt();
+                            // 	int level = lObject.get("level").getAsInt();
+                            // 	JsonObject detailsObject=lObject.getAsJsonObject("details");
+                            // 	JsonArray hintArray=detailsObject.getAsJsonArray("hint");
+                            // }
+                            System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId, action == 1 ? "不确定" : "不通过",
+                                    labelArray.toString()));
+                        }
                     }
                 }
             }
