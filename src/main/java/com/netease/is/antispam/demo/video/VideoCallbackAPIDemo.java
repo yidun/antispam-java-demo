@@ -73,14 +73,15 @@ public class VideoCallbackAPIDemo {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     int status = jObject.get("status").getAsInt();
-                    if(status!=0){//异常，异常码定义见官网文档
-                        System.out.println("视频异常，status="+status);
+                    if (status != 0) {// 异常，异常码定义见官网文档
+                        System.out.println("视频异常，status=" + status);
                         continue;
                     }
+                    String taskId = jObject.get("taskId").getAsString();
                     String callback = jObject.get("callback").getAsString();
                     int videoLevel = jObject.get("level").getAsInt();
                     if (videoLevel == 0) {
-                        System.out.println(String.format("正常, callback=%s", callback));
+                        System.out.println(String.format("taskId:%s, 正常, callback=%s", taskId, callback));
                     } else if (videoLevel == 1 || videoLevel == 2) {
                         JsonArray evidenceArray = jObject.get("evidences").getAsJsonArray();
                         for (JsonElement evidenceElement : evidenceArray) {
@@ -89,7 +90,6 @@ public class VideoCallbackAPIDemo {
                             long endTime = eObject.get("endTime").getAsLong();
                             int type = eObject.get("type").getAsInt();
                             String url = eObject.get("url").getAsString();
-
                             JsonArray labelArray = eObject.get("labels").getAsJsonArray();
                             for (JsonElement labelElement : labelArray) {
                                 JsonObject lObject = labelElement.getAsJsonObject();
@@ -97,8 +97,11 @@ public class VideoCallbackAPIDemo {
                                 int level = lObject.get("level").getAsInt();
                                 double rate = lObject.get("rate").getAsDouble();
                             }
-                            System.out.println(String.format("%s, callback=%s, 证据信息：%s, 证据分类：%s, ", videoLevel == 1 ? "不确定"
-                                            : "确定", callback, eObject, labelArray));
+                            System.out.println(
+                                    String.format("taskId:%s, %s, callback=%s, 证据信息：%s, 证据分类：%s, ", taskId,
+                                            videoLevel == 1 ? "不确定"
+                                                    : "确定",
+                                            callback, eObject, labelArray));
                         }
                     }
                 }

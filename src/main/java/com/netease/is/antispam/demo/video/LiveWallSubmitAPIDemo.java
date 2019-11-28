@@ -1,31 +1,32 @@
 /*
- * @(#) VideoSubmitAPIDemo.java 2016年8月23日
+ * @(#) LiveVideoCheckAPIDemo.java 2016年8月1日
  *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
 package com.netease.is.antispam.demo.video;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+
 /**
- * 调用易盾反垃圾云服务视频信息提交接口API示例，该示例依赖以下jar包：
+ * 调用易盾反垃圾云服务直播电视墙提交接口API示例，该示例依赖以下jar包：
  * 1. httpclient，用于发送http请求
  * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  *
- * @author hzdingyong
- * @version 2016年8月23日
+ * @author hzgaomin
+ * @version 2016年8月1日
  */
-public class VideoSubmitAPIDemo {
+public class LiveWallSubmitAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -39,9 +40,9 @@ public class VideoSubmitAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务视频信息提交接口地址
+     * 易盾反垃圾云服务直播流信息提交接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/video/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v2/livevideo/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,7 +53,7 @@ public class VideoSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -76,14 +77,11 @@ public class VideoSubmitAPIDemo {
         int code = jObject.get("code").getAsInt();
         String msg = jObject.get("msg").getAsString();
         if (code == 200) {
-            JsonObject result = jObject.getAsJsonObject("result");
-            // status 0:成功，1:失败
-            int status = result.get("status").getAsInt();
-            String taskId = result.get("taskId").getAsString();
-            if (status == 0) {
-                System.out.println(String.format("推送成功!taskId=%s", taskId));
+            boolean result = jObject.get("result").getAsBoolean();
+            if (result) {
+                System.out.println("推送成功!");
             } else {
-                System.out.println(String.format("推送失败!taskId=%s", taskId));
+                System.out.println("推送失败!");
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
