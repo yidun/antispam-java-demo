@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import com.google.gson.JsonElement;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
@@ -68,7 +69,16 @@ public class VideoSolutionCallbackAPIDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            System.out.println("Result：" + resultArray.getAsString());
+            if (resultArray.size() == 0) {
+                System.out.println("暂时没有结果需要获取，请稍后重试！");
+            } else {
+                for (JsonElement jsonElement : resultArray) {
+                    JsonObject jObject = jsonElement.getAsJsonObject();
+                    String taskId = jObject.get("taskId").getAsString();
+                    int result = jObject.get("result").getAsInt();
+                    System.out.println(String.format("taskId:%s, result:%s", taskId, result));
+                }
+            }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
