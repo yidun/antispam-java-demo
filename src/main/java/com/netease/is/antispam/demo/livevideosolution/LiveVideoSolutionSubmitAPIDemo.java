@@ -1,9 +1,10 @@
 /*
- * @(#) VideoSubmitAPIDemo.java 2016年8月23日
+ * @(#) LiveVideoSolutionSubmitAPIDemo.java 2019-11-28
  *
- * Copyright 2010 NetEase.com, Inc. All rights reserved.
+ * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.audio;
+
+package com.netease.is.antispam.demo.livevideosolution;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,15 +18,13 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 调用易盾反垃圾云服务音频信息提交接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾直播音视频解决方案检测提交接口API示例
  *
- * @author hzhumin1
- * @version 2018年10月25日
+ * @author maxiaofeng
+ * @version 2019-11-28
  */
-public class AudioSubmitAPIDemo {
+public class LiveVideoSolutionSubmitAPIDemo {
+
     /**
      * 产品密钥ID，产品标识
      */
@@ -35,29 +34,32 @@ public class AudioSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 业务ID，易盾根据产品业务特点分配
+     * 易盾反垃圾直播音视频解决方案在线检测接口地址
      */
-    private final static String BUSINESSID = "your_business_id";
-    /**
-     * 易盾反垃圾云服务音频信息提交接口地址
-     */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v1/livewallsolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("businessId", BUSINESSID);
-        params.put("version", "v3.1");
+        params.put("version", "v1.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        params.put("url", "http://xxx.xx");
+        params.put("url", "http://xxx.xxx.com/xxxx");
+        params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
+        // params.put("callback", "{\"p\":\"xx\"}");
+        // params.put("scFrequency","5");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -70,14 +72,14 @@ public class AudioSubmitAPIDemo {
         JsonObject jObject = new JsonParser().parse(response).getAsJsonObject();
         int code = jObject.get("code").getAsInt();
         String msg = jObject.get("msg").getAsString();
-        JsonObject result = jObject.get("result").getAsJsonObject();
         if (code == 200) {
+            JsonObject result = jObject.get("result").getAsJsonObject();
             String taskId = result.get("taskId").getAsString();
-            int status = result.get("status").getAsInt();
-            if (status == 0) {
+            boolean status = result.get("status").getAsBoolean();
+            if (status) {
                 System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
             } else {
-                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
+                System.out.println(String.format("SUBMIT FAIL: taskId=%s", taskId));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));

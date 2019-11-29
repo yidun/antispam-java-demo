@@ -1,9 +1,17 @@
 /*
- * @(#) VideoCallbackAPIDemo.java 2016年8月23日
+ * @(#) LiveAudioCallbackAPIDemo.java 2019-04-11
  *
- * Copyright 2010 NetEase.com, Inc. All rights reserved.
+ * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
+
 package com.netease.is.antispam.demo.audio;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,23 +19,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
- * 调用易盾反垃圾云服务音频离线结果获取接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾云服务获取直播语音离线结果接口API示例
  *
- * @author hzhumin1
- * @version 2018年10月25日
+ * @author maxiaofeng
+ * @version 2019-04-11
  */
-public class AudioCallbackAPIDemo {
+public class LiveAudioCallbackAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -41,13 +40,13 @@ public class AudioCallbackAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务音频离线结果获取接口地址
+     * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/callback/results";
+    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
      * @param args
@@ -58,7 +57,7 @@ public class AudioCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3.1");
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -74,7 +73,7 @@ public class AudioCallbackAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("antispam");
+            JsonArray resultArray = resultObject.getAsJsonArray("result");
             if (resultArray.size() == 0) {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
@@ -87,19 +86,17 @@ public class AudioCallbackAPIDemo {
                         System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
                     } else {
                         int action = jObject.get("action").getAsInt();
-                        JsonArray labelArray = jObject.getAsJsonArray("labels");
+                        JsonArray segmentArray = jObject.getAsJsonArray("segments");
                         if (action == 0) {
-                            System.out.println(String.format("taskId=%s，结果：通过", taskId));
+                            System.out.println(String.format("taskId=%s，结果：通过，证据信息如下：%s", taskId, segmentArray.toString()));
                         } else if (action == 1 || action == 2) {
-                            // for (JsonElement labelElement : labelArray) {
+                            // for (JsonElement labelElement : segmentArray) {
                             // 	JsonObject lObject = labelElement.getAsJsonObject();
                             // 	int label = lObject.get("label").getAsInt();
                             // 	int level = lObject.get("level").getAsInt();
-                            // 	JsonObject detailsObject=lObject.getAsJsonObject("details");
-                            // 	JsonArray hintArray=detailsObject.getAsJsonArray("hint");
                             // }
                             System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId, action == 1 ? "不确定" : "不通过",
-                                    labelArray.toString()));
+                                    segmentArray.toString()));
                         }
                     }
                 }
@@ -108,4 +105,5 @@ public class AudioCallbackAPIDemo {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
     }
+
 }

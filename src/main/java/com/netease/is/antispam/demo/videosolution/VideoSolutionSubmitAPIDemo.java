@@ -1,9 +1,10 @@
 /*
- * @(#) LiveVideoCheckAPIDemo.java 2016年8月1日
+ * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
  *
- * Copyright 2010 NetEase.com, Inc. All rights reserved.
+ * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.video;
+
+package com.netease.is.antispam.demo.videosolution;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,15 +19,12 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务直播流信息提交接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾点播音视频解决方案检测提交接口API示例
  *
- * @author hzgaomin
- * @version 2016年8月1日
+ * @author maxiaofeng
+ * @version 2019-06-10
  */
-public class LiveVideoSubmitAPIDemo {
+public class VideoSolutionSubmitAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -36,34 +34,43 @@ public class LiveVideoSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 业务ID，易盾根据产品业务特点分配
+     * 易盾反垃圾点播音视频解决方案在线检测接口地址
      */
-    private final static String BUSINESSID = "your_business_id";
-    /**
-     * 易盾反垃圾云服务直播流信息提交接口地址
-     */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/livevideo/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v1/videosolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000, 1000, 1000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("businessId", BUSINESSID);
-        params.put("version", "v3");
+        params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        params.put("url", "http://xxx.xxx.com/xxxx");
-        params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
-        // params.put("callback", "{\"p\":\"xx\"}");
-        // params.put("scFrequency", "5");
-        // 主动回调地址url,如果设置了则走主动回调逻辑
-        // params.put("callbackUrl", "http://***");
+        params.put("url", "http://xxx.xx");
+        // JsonArray jsonArray = new JsonArray();
+        // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
+        // JsonObject image1 = new JsonObject();
+        // image1.addProperty("name", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        // image1.addProperty("type", 1);
+        // image1.addProperty("data", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        // jsonArray.add(image1);
+        // 传图片base64编码进行检测，name结构产品自行设计，用于唯一定位该图片数据
+        // JsonObject image2 = new JsonObject();
+        // image2.addProperty("name", "{\"imageId\": 33451123, \"contentId\": 78978}");
+        // image2.addProperty("type", 2);
+        // image2.addProperty("data","xxx");
+        // jsonArray.add(image2);
+        // params.put("images", jsonArray.toString());
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -78,14 +85,9 @@ public class LiveVideoSubmitAPIDemo {
         String msg = jObject.get("msg").getAsString();
         if (code == 200) {
             JsonObject result = jObject.get("result").getAsJsonObject();
-            // status 0:成功，1:失败
-            int status = result.get("status").getAsInt();
             String taskId = result.get("taskId").getAsString();
-            if (status == 0) {
-                System.out.println("提交成功!,taskId:" + taskId);
-            } else {
-                System.out.println("提交失败!");
-            }
+            String dataId = result.get("dataId").getAsString();
+            System.out.println(String.format("SUBMIT SUCCESS: taskId=%s, dataId=%s", taskId, dataId));
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }

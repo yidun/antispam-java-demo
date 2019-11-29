@@ -64,15 +64,15 @@ public class TextCheckAPIDemo {
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("content", "易盾测试内容！v3接口! ");
-        params.put("dataType", "1");
-        params.put("ip", "123.115.77.137");
-        params.put("account", "java@163.com");
-        params.put("deviceType", "4");
-        params.put("deviceId", "92B1E5AA-4C3D-4565-A8C2-86E297055088");
-        params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        params.put("publishTime", String.valueOf(System.currentTimeMillis()));
+        // params.put("dataType", "1");
+        // params.put("ip", "123.115.77.137");
+        // params.put("account", "java@163.com");
+        // params.put("deviceType", "4");
+        // params.put("deviceId", "92B1E5AA-4C3D-4565-A8C2-86E297055088");
+        // params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
+        // params.put("publishTime", String.valueOf(System.currentTimeMillis()));
         // 主动回调地址url,如果设置了则走主动回调逻辑
-        //params.put("callbackUrl", "http://***");
+        // params.put("callbackUrl", "http://***");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);

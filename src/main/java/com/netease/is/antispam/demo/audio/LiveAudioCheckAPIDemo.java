@@ -1,10 +1,10 @@
 /*
- * @(#) FileSubmitApiDemo.java 2019-04-01
+ * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
  *
  * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.file;
+package com.netease.is.antispam.demo.audio;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,22 +19,31 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * FileSubmitApiDemo
+ * 调用易盾反垃圾云服务检测直播语音接口API示例
  *
- * @author jinxiaotian01
- * @version 19-4-1
+ * @author maxiaofeng
+ * @version 2019-04-11
  */
-public class FileSubmitApiDemo {
-
-    /** 产品密钥ID，产品标识 */
+public class LiveAudioCheckAPIDemo {
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 易盾反垃圾云服务文档检测在线提交地址 */
-    private final static String API_URL = "https://as-file.dun.163yun.com/v1/file/submit";
-    /** 需检测的文档URL */
-    private final static String FILE_URL = "http://xxx.com/file/helloworld.doc";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 业务ID，易盾根据产品业务特点分配
+     */
+    private final static String BUSINESSID = "your_business_id";
+    /**
+     * 易盾反垃圾云服务图片在线检测接口地址
+     */
+    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/check";
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
@@ -46,19 +55,13 @@ public class FileSubmitApiDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.0");
+        params.put("businessId", BUSINESSID);
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        params.put("url", FILE_URL);
-        // params.put("dataType", "1");
-        // params.put("checkFlag", "3");
-        // params.put("ip", "123.115.77.137");
-        // params.put("account", "java@163.com");
-        // params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        // params.put("publishTime", String.valueOf(System.currentTimeMillis()));
+        params.put("url", "http://xxx.xx");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -68,14 +71,18 @@ public class FileSubmitApiDemo {
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
         // 5.解析接口返回值
-        JsonObject resultObject = new JsonParser().parse(response).getAsJsonObject();
-        int code = resultObject.get("code").getAsInt();
-        String msg = resultObject.get("msg").getAsString();
+        JsonObject jObject = new JsonParser().parse(response).getAsJsonObject();
+        int code = jObject.get("code").getAsInt();
+        String msg = jObject.get("msg").getAsString();
+        JsonObject result = jObject.get("result").getAsJsonObject();
         if (code == 200) {
-            JsonObject result = resultObject.getAsJsonObject("result");
-            System.out.println(String.format("SUCCESS: taskId=%s, dataId=%s", result.get("taskId").getAsString(),
-                    result.get("dataId").getAsString()));
-
+            String taskId = result.get("taskId").getAsString();
+            int status = result.get("status").getAsInt();
+            if (status == 0) {
+                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
+            } else {
+                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
+            }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
