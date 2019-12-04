@@ -24,7 +24,7 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  * @author jinxiaotian01
  * @version 19-4-1
  */
-public class FileSubmitApiDemo {
+public class FileSubmitAPIDemo {
 
     /** 产品密钥ID，产品标识 */
     private final static String SECRETID = "your_secret_id";
@@ -46,19 +46,19 @@ public class FileSubmitApiDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.0");
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("url", FILE_URL);
-        // params.put("dataType", "1");
-        // params.put("checkFlag", "3");
-        // params.put("ip", "123.115.77.137");
-        // params.put("account", "java@163.com");
-        // params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
-        // params.put("publishTime", String.valueOf(System.currentTimeMillis()));
+
+        params.put("checkFlag", "3");
+        params.put("ip", "123.115.77.137");
+        params.put("account", "java@163.com");
+        params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
+        params.put("publishTime", String.valueOf(System.currentTimeMillis()));
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);

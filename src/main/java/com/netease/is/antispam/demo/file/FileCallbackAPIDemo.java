@@ -14,6 +14,7 @@ import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -25,7 +26,7 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  * @author jinxiaotian01
  * @version 19-4-1
  */
-public class FileCallbackApiDemo {
+public class FileCallbackAPIDemo {
     /** 产品密钥ID，产品标识 */
     private final static String SECRETID = "your_secret_id";
     /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
@@ -44,7 +45,7 @@ public class FileCallbackApiDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.0");
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -61,10 +62,24 @@ public class FileCallbackApiDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            System.out.println("Result：" + resultArray.getAsString());
+            if (resultArray == null) {
+                System.out.println("Can't find Callback Data");
+                return;
+            }
+            for (JsonElement jsonElement : resultArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String dataId = jObject.get("dataId").getAsString();
+                String taskId = jObject.get("taskId").getAsString();
+                int result = jObject.get("result").getAsInt();
+                String callback = !jObject.has("callback") ? "" : jObject.get("callback").getAsString();
+                JsonObject evidencesObject = jObject.get("evidences").getAsJsonObject();
+
+                System.out.println(String.format("SUCCESS: dataId=%s, taskId=%s, result=%s, callback=%s, evidences=%s",
+                        dataId, taskId, result, callback, evidencesObject));
+            }
+
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
-
     }
 }
