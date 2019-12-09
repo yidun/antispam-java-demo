@@ -172,6 +172,24 @@ public class ImageCheckAPIDemo {
                     System.out.println(String.format("识别人脸数量:%s, 人物信息及坐标信息:%s", faceNumber, faceContents.toString()));
                 }
             }
+            // 图片质量检测结果
+            JsonArray qualityArray = resultObject.getAsJsonArray("quality");
+            for (JsonElement jsonElement : qualityArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String name = jObject.get("name").getAsString();
+                String taskId = jObject.get("taskId").getAsString();
+                JsonArray details = jObject.get("details").getAsJsonArray();
+                System.out.println(String.format("taskId=%s,name=%s", taskId, name));
+                // 产品需根据自身需求，自行解析处理，本示例只是简单输出质量结果信息
+                for (JsonElement detail : details) {
+                    JsonObject lObject = detail.getAsJsonObject();
+                    float aestheticsRate = lObject.get("aestheticsRate").getAsFloat();
+                    JsonObject metaInfo = lObject.getAsJsonObject("metaInfo");
+                    JsonObject boarderInfo = lObject.getAsJsonObject("boarderInfo");
+                    System.out.println(String.format("图片美观度分数:%s, 图片基本信息:%s, 图片边框信息:%s", aestheticsRate,
+                            metaInfo.toString(), boarderInfo.toString()));
+                }
+            }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
