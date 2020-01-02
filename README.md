@@ -28,6 +28,8 @@ http://dun.163.com
 ├── FileCallbackApiDemo.java 文档解决方案检测结果获取接口演示
 ├── VideoSolutionSubmitApiDemo.java 点播音视频解决方案在线检测提交接口演示
 ├── VideoSolutionCallbackApiDemo.java 点播音视频解决方案检测结果获取接口演示
+├── KeywordSubmitAPIDemo.java 敏感词提交接口演示
+├── ListSubmitAPIDemo.java 名单提交接口演示
 ├── CallbackReceiveController.java 主动回调数据接收接口演示
 ├── HttpClient4Utils.java httpclient封装类
 └── SignatureUtils.java 签名方法封装类
