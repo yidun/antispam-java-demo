@@ -41,7 +41,7 @@ public class AudioSubmitAPIDemo {
     /**
      * 易盾反垃圾云服务音频信息提交接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/audio/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,14 +52,12 @@ public class AudioSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v1");
+        params.put("version", "v3.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        params.put("url", "http://xxx.xxx.com/xxxx");
-        // 主动回调地址url,如果设置了则走主动回调逻辑
-        //params.put("callbackUrl", "http://***");
+        params.put("url", "http://xxx.xx");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -72,15 +70,14 @@ public class AudioSubmitAPIDemo {
         JsonObject jObject = new JsonParser().parse(response).getAsJsonObject();
         int code = jObject.get("code").getAsInt();
         String msg = jObject.get("msg").getAsString();
+        JsonObject result = jObject.get("result").getAsJsonObject();
         if (code == 200) {
-            JsonObject result = jObject.getAsJsonObject("result");
-            // status 0:成功，1:失败
-            int status = result.get("status").getAsInt();
             String taskId = result.get("taskId").getAsString();
+            int status = result.get("status").getAsInt();
             if (status == 0) {
-                System.out.println(String.format("推送成功!taskId=%s", taskId));
+                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
             } else {
-                System.out.println(String.format("推送失败!taskId=%s", taskId));
+                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));

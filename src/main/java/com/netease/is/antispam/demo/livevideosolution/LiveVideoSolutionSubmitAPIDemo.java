@@ -1,30 +1,30 @@
 /*
- * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
+ * @(#) LiveVideoSolutionSubmitAPIDemo.java 2019-11-28
  *
  * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.videosolution;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
+package com.netease.is.antispam.demo.livevideosolution;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
- * 调用易盾反垃圾点播音视频解决方案检测提交接口API示例
+ * 调用易盾反垃圾直播音视频解决方案检测提交接口API示例
  *
  * @author maxiaofeng
- * @version 2019-06-10
+ * @version 2019-11-28
  */
-public class VideoSolutionSubmitAPIDemo {
+public class LiveVideoSolutionSubmitAPIDemo {
+
     /**
      * 产品密钥ID，产品标识
      */
@@ -34,9 +34,9 @@ public class VideoSolutionSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾点播音视频解决方案在线检测接口地址
+     * 易盾反垃圾直播音视频解决方案在线检测接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/videosolution/submit";
+    private final static String API_URL = "https://as.dun.163yun.com/v1/livewallsolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -51,26 +51,15 @@ public class VideoSolutionSubmitAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        params.put("version", "v1.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
         // 2.设置私有参数
-        params.put("url", "http://xxx.xx");
-        // JsonArray jsonArray = new JsonArray();
-        // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
-        // JsonObject image1 = new JsonObject();
-        // image1.addProperty("name", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
-        // image1.addProperty("type", 1);
-        // image1.addProperty("data", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
-        // jsonArray.add(image1);
-        // 传图片base64编码进行检测，name结构产品自行设计，用于唯一定位该图片数据
-        // JsonObject image2 = new JsonObject();
-        // image2.addProperty("name", "{\"imageId\": 33451123, \"contentId\": 78978}");
-        // image2.addProperty("type", 2);
-        // image2.addProperty("data","xxx");
-        // jsonArray.add(image2);
-        // params.put("images", jsonArray.toString());
+        params.put("url", "http://xxx.xxx.com/xxxx");
+        params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
+        // params.put("callback", "{\"p\":\"xx\"}");
+        // params.put("scFrequency","5");
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -86,8 +75,12 @@ public class VideoSolutionSubmitAPIDemo {
         if (code == 200) {
             JsonObject result = jObject.get("result").getAsJsonObject();
             String taskId = result.get("taskId").getAsString();
-            String dataId = result.get("dataId").getAsString();
-            System.out.println(String.format("SUBMIT SUCCESS: taskId=%s, dataId=%s", taskId, dataId));
+            boolean status = result.get("status").getAsBoolean();
+            if (status) {
+                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
+            } else {
+                System.out.println(String.format("SUBMIT FAIL: taskId=%s", taskId));
+            }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }

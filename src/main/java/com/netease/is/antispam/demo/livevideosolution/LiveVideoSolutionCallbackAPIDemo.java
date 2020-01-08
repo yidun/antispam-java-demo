@@ -1,38 +1,46 @@
 /*
- * @(#) FileCallbackResultsApiDemo.java 2019-04-01
+ * @(#) LiveVideoSolutionCallbackAPIDemo.java 2019-11-28
  *
  * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.file;
+package com.netease.is.antispam.demo.livevideosolution;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
-
 /**
- * FileCallbackResultsApiDemo
+ * 调用易盾反垃圾云服务获取直播音视频解决方案离线结果接口API示例
  *
- * @author jinxiaotian01
- * @version 19-4-1
+ * @author maxiaofeng
+ * @version 2019-11-28
  */
-public class FileCallbackApiDemo {
-    /** 产品密钥ID，产品标识 */
+public class LiveVideoSolutionCallbackAPIDemo {
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 易盾反垃圾云服务文档解决方案检测结果获取接口地址 */
-    private final static String API_URL = "https://as-file.dun.163yun.com/v1/file/callback/results";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 易盾反垃圾云服务点播音视频解决方案离线结果获取接口地址
+     */
+    private final static String API_URL = "https://as.dun.163yun.com/v1/livewallsolution/callback/results";
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
@@ -61,7 +69,17 @@ public class FileCallbackApiDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            System.out.println("Result：" + resultArray.getAsString());
+            if (resultArray.size() == 0) {
+                System.out.println("暂时没有结果需要获取，请稍后重试！");
+            } else {
+                for (JsonElement jsonElement : resultArray) {
+                    JsonObject jObject = jsonElement.getAsJsonObject();
+                    String taskId = jObject.get("taskId").getAsString();
+                    int action = jObject.get("action").getAsInt();
+                    int label = jObject.get("label").getAsInt();
+                    System.out.println(String.format("taskId:%s, action:%s, label:%s", taskId, action, label));
+                }
+            }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
