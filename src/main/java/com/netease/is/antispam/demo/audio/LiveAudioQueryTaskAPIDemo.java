@@ -1,7 +1,7 @@
 /*
- * @(#) LiveAudioCallbackAPIDemo.java 2019-04-11
+ * @(#) LiveAudioQueryTaskAPIDemo.java 2020-01-08
  *
- * Copyright 2019 NetEase.com, Inc. All rights reserved.
+ * Copyright 2020 NetEase.com, Inc. All rights reserved.
  */
 
 package com.netease.is.antispam.demo.audio;
@@ -21,12 +21,12 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务获取直播语音离线结果接口API示例
+ * 调用易盾反垃圾云服务查询直播语音片段离线结果接口API示例
  *
  * @author maxiaofeng
- * @version 2019-04-11
+ * @version 2020-01-08
  */
-public class LiveAudioCallbackAPIDemo {
+public class LiveAudioQueryTaskAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -42,7 +42,7 @@ public class LiveAudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/callback/results";
+    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/query/task";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -57,7 +57,10 @@ public class LiveAudioCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v1.1");
+        params.put("version", "v1.0");
+        params.put("taskId", "xxx");
+        params.put("startTime", "1578326400000");
+        params.put("endTime", "1578327000000");// 最长支持查10分钟跨度
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -75,32 +78,26 @@ public class LiveAudioCallbackAPIDemo {
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
             if (resultArray.size() == 0) {
-                System.out.println("暂时没有结果需要获取，请稍后重试！");
+                System.out.println("没有结果");
             } else {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
-                    int asrStatus = jObject.get("asrStatus").getAsInt();
+                    int action = jObject.get("action").getAsInt();
                     long startTime = jObject.get("startTime").getAsLong();
                     long endTime = jObject.get("endTime").getAsLong();
-                    if (asrStatus == 4) {
-                        int asrResult = jObject.get("asrResult").getAsInt();
-                        System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
-                    } else {
-                        int action = jObject.get("action").getAsInt();
-                        JsonArray segmentArray = jObject.getAsJsonArray("segments");
-                        if (action == 0) {
-                            System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
-                                    endTime, segmentArray.toString()));
-                        } else if (action == 1 || action == 2) {
-                            // for (JsonElement labelElement : segmentArray) {
-                            // JsonObject lObject = labelElement.getAsJsonObject();
-                            // int label = lObject.get("label").getAsInt();
-                            // int level = lObject.get("level").getAsInt();
-                            // }
-                            System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
-                                    action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
-                        }
+                    JsonArray segmentArray = jObject.getAsJsonArray("segments");
+                    if (action == 0) {
+                        System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
+                                endTime, segmentArray.toString()));
+                    } else if (action == 1 || action == 2) {
+                        // for (JsonElement labelElement : segmentArray) {
+                        // JsonObject lObject = labelElement.getAsJsonObject();
+                        // int label = lObject.get("label").getAsInt();
+                        // int level = lObject.get("level").getAsInt();
+                        // }
+                        System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
+                                action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
                     }
                 }
             }
