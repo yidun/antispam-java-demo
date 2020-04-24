@@ -22,8 +22,8 @@ import java.util.Random;
 /**
  * 调用易盾反垃圾云服务获取直播音视频解决方案离线结果接口API示例
  *
- * @author maxiaofeng
- * @version 2019-11-28
+ * @author yd-dev
+ * @version 2020-04-22
  */
 public class LiveVideoSolutionCallbackAPIDemo {
     /**
@@ -37,7 +37,7 @@ public class LiveVideoSolutionCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务点播音视频解决方案离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163yun.com/v1/livewallsolution/callback/results";
+    private final static String API_URL = "http://as.dun.163yun.com/v2/livewallsolution/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,7 +52,7 @@ public class LiveVideoSolutionCallbackAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.0");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -69,20 +69,124 @@ public class LiveVideoSolutionCallbackAPIDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            if (resultArray.size() == 0) {
+            if (null == resultArray || resultArray.size() == 0) {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
-                    int action = jObject.get("action").getAsInt();
-                    int label = jObject.get("label").getAsInt();
-                    System.out.println(String.format("taskId:%s, action:%s, label:%s", taskId, action, label));
+                    String callback = jObject.get("callback").getAsString();
+                    String dataId = jObject.get("dataId").getAsString();
+                    int status = jObject.get("status").getAsInt();
+                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s, status:%s", taskId, callback, dataId, status));
+                    if (jObject.has("evidences")) {
+                        JsonObject evidences = jObject.get("evidences").getAsJsonObject();
+                        if (evidences.has("audio")) {
+                            parseAudioEvidence(evidences.get("audio").getAsJsonObject(), taskId);
+                        } else if (evidences.has("video")) {
+                            parseVideoEvidence(evidences.get("video").getAsJsonObject(), taskId);
+                        } else {
+                            System.out.println(String.format("Invalid Evidence: %s", evidences.toString()));
+                        }
+                    } else if (jObject.has("reviewEvidences")) {
+                        parseHumanEvidence(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
+                    } else {
+                        System.out.println(String.format("Invalid Result: %s", jObject.toString()));
+                    }
                 }
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
+    }
 
+    /**
+     * 音频机审信息
+     * @param audioEvidence
+     */
+    private static void parseAudioEvidence(JsonObject audioEvidence, String taskId) {
+        System.out.println("=== 音频机审信息 ===");
+        int asrStatus = audioEvidence.get("asrStatus").getAsInt();
+        long startTime = audioEvidence.get("startTime").getAsLong();
+        long endTime = audioEvidence.get("endTime").getAsLong();
+        if (asrStatus == 4) {
+            int asrResult = audioEvidence.get("asrResult").getAsInt();
+            System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
+        } else {
+            int action = audioEvidence.get("action").getAsInt();
+            JsonArray segmentArray = audioEvidence.getAsJsonArray("segments");
+            if (action == 0) {
+                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
+                        endTime, segmentArray.toString()));
+            } else if (action == 1 || action == 2) {
+                for (JsonElement labelElement : segmentArray) {
+                    JsonObject lObject = labelElement.getAsJsonObject();
+                    int label = lObject.get("label").getAsInt();
+                    int level = lObject.get("level").getAsInt();
+                    String evidence = lObject.get("evidence").getAsString();
+                }
+                System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
+                        action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
+            }
+        }
+        System.out.println("================");
+    }
+
+    /**
+     * 视频计审信息
+     * @param videoEvidence
+     */
+    private static void parseVideoEvidence(JsonObject videoEvidence, String taskId) {
+        System.out.println("=== 视频机审信息 ===");
+        JsonObject evidence = videoEvidence.get("evidence").getAsJsonObject();
+        JsonArray labels = videoEvidence.get("labels").getAsJsonArray();
+
+        int type = evidence.get("type").getAsInt();
+        String url = evidence.get("url").getAsString();
+        long beginTime = evidence.get("beginTime").getAsLong();
+        long endTime = evidence.get("endTime").getAsLong();
+
+        for (JsonElement jsonElement : labels) {
+            JsonObject callbackImageLabel = jsonElement.getAsJsonObject();
+            int label = callbackImageLabel.get("label").getAsInt();
+            int level = callbackImageLabel.get("level").getAsInt();
+            float rate = callbackImageLabel.get("rate").getAsFloat();
+            JsonArray subLabels = callbackImageLabel.get("subLabels").getAsJsonArray();
+        }
+
+        System.out.println(String.format("Machine Evidence: %s", evidence.toString()));
+        System.out.println(String.format("Machine Labels: %s", labels.toString()));
+        System.out.println("================");
+    }
+
+    /**
+     * 人审信息
+     * @param humanEvidence
+     */
+    private static void parseHumanEvidence(JsonObject humanEvidence, String taskId) {
+        System.out.println("=== 人审信息 ===");
+        // 操作
+        int action = humanEvidence.get("action").getAsInt();
+        // 判断时间点
+        long actionTime = humanEvidence.get("actionTime").getAsLong();
+        // 违规类型
+        int label = humanEvidence.get("label").getAsInt();
+        // 违规详情
+        String detail = humanEvidence.get("detail").getAsString();
+        // 警告次数
+        int warnCount = humanEvidence.get("warnCount").getAsInt();
+        // 证据信息
+        JsonArray evidence = humanEvidence.get("evidence").getAsJsonArray();
+
+        if (action == 2) {
+            // 警告
+            System.out.println(String.format("警告, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail, evidence.toString()));
+        } else if (action == 3) {
+            // 断流
+            System.out.println(String.format("断流, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail, evidence.toString()));
+        } else {
+            System.out.println(String.format("人审信息：%s", humanEvidence.toString()));
+        }
+        System.out.println("================");
     }
 }

@@ -25,8 +25,8 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  * 2.commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
- * @author hzgaomin
- * @version 2016年8月1日
+ * @author yd-dev
+ * @version 2020-04-22
  */
 public class LiveWallCallbackAPIDemo {
     /** 产品密钥ID，产品标识 */
@@ -36,7 +36,7 @@ public class LiveWallCallbackAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务直播离线结果获取接口地址 */
-    private final static String API_URL = "http://as.dun.163yun.com/v2/livewall/callback/results";
+    private final static String API_URL = "http://as.dun.163yun.com/v3/livewall/callback/results";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
 
@@ -50,7 +50,7 @@ public class LiveWallCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v2");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -67,31 +67,89 @@ public class LiveWallCallbackAPIDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            for (JsonElement jsonElement : resultArray) {
-                JsonObject jObject = jsonElement.getAsJsonObject();
-                // 直播电视墙uuid
-                String taskId = jObject.get("taskId").getAsString();
-                // 检测状态
-                Integer status = jObject.get("status").getAsInt();
-                String callback = jObject.get("callback").getAsString();
-                int action = jObject.get("action").getAsInt();
-                long actionTime = jObject.get("actionTime").getAsLong();
-                int label = jObject.get("label").getAsInt();
-                String detail = jObject.get("detail").getAsString();
-                int warnCount = jObject.get("warnCount").getAsInt();
-                JsonArray evidenceObjec = jObject.get("evidence").getAsJsonArray();
-                if (action == 2) {// 警告
-                    System.out.println(
-                            String.format("警告,taskId:%s，callback=%s, 总警告次数:%s, 证据信息：%s", taskId, callback, warnCount,
-                                    evidenceObjec));
-                } else if (action == 3) { // 断流
-                    System.out.println(
-                            String.format("断流, taskId:%s, callback=%s, 总警告次数:%s, 证据信息：%s", taskId, callback, warnCount,
-                                    evidenceObjec));
+            if (null == resultArray || resultArray.size() == 0) {
+                System.out.println("暂时没有结果需要获取，请稍后重试！");
+            } else {
+                for (JsonElement jsonElement : resultArray) {
+                    JsonObject jObject = jsonElement.getAsJsonObject();
+                    // 直播电视墙uuid
+                    String taskId = jObject.get("taskId").getAsString();
+                    // 数据id
+                    String dataId = jObject.get("dataId").getAsString();
+                    // 回调参数
+                    String callback = jObject.get("callback").getAsString();
+                    // 状态
+                    int status = jObject.get("status").getAsInt();
+                    System.out.println(String.format("taskId:%s, dataId:%s, callback:%s, status:%s", taskId, dataId, callback, status));
+                    if (jObject.has("evidences")) {
+                        parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
+                    } else if (jObject.has("reviewEvidences")) {
+                        parseHuman(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
+                    } else {
+                        System.out.println(String.format("Invalid Result: %s", jObject.toString()));
+                    }
                 }
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
+    }
+
+    /**
+     * 机审信息
+     *
+     * @param evidences
+     * @param taskId
+     */
+    private static void parseMachine(JsonObject evidences, String taskId) {
+        System.out.println("=== 机审信息 ===");
+        JsonObject evidence = evidences.get("evidence").getAsJsonObject();
+        JsonArray labels = evidences.get("labels").getAsJsonArray();
+
+        int type = evidence.get("type").getAsInt();
+        String url = evidence.get("url").getAsString();
+        long beginTime = evidence.get("beginTime").getAsLong();
+        long endTime = evidence.get("endTime").getAsLong();
+
+        for (JsonElement jsonElement : labels) {
+            JsonObject callbackImageLabel = jsonElement.getAsJsonObject();
+            int label = callbackImageLabel.get("label").getAsInt();
+            int level = callbackImageLabel.get("level").getAsInt();
+            float rate = callbackImageLabel.get("rate").getAsFloat();
+            JsonArray subLabels = callbackImageLabel.get("subLabels").getAsJsonArray();
+        }
+
+        System.out.println(String.format("Machine Evidence: %s", evidence.toString()));
+        System.out.println(String.format("Machine Labels: %s", labels.toString()));
+        System.out.println("================");
+    }
+
+    /**
+     * 人审信息
+     *
+     * @param reviewEvidences
+     * @param taskId
+     */
+    private static void parseHuman(JsonObject reviewEvidences, String taskId) {
+        System.out.println("=== 人审信息 ===");
+        // 操作
+        int action = reviewEvidences.get("action").getAsInt();
+        long actionTime = reviewEvidences.get("actionTime").getAsLong();
+        int label = reviewEvidences.get("label").getAsInt();
+        String detail = reviewEvidences.get("detail").getAsString();
+        int warnCount = reviewEvidences.get("warnCount").getAsInt();
+        JsonArray evidence = reviewEvidences.get("evidence").getAsJsonArray();
+        if (action == 2) {
+            // 警告
+            System.out.println(
+                    String.format("警告,taskId:%s, 总警告次数:%s, 证据信息：%s", taskId, warnCount, evidence.toString()));
+        } else if (action == 3) {
+            // 断流
+            System.out.println(
+                    String.format("断流, taskId:%s, 总警告次数:%s, 证据信息：%s", taskId, warnCount, evidence.toString()));
+        } else {
+            System.out.println(String.format("人审信息: %s", reviewEvidences.toString()));
+        }
+        System.out.println("================");
     }
 }
