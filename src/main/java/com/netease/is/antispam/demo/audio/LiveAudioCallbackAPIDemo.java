@@ -42,7 +42,7 @@ public class LiveAudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v2/liveaudio/callback/results";
+    private final static String API_URL = "http://as-liveaudio.dun.163yun.com/v2/liveaudio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -126,7 +126,7 @@ public class LiveAudioCallbackAPIDemo {
                         action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
             }
         }
-        System.out.println("================");
+        System.out.println("============");
     }
 
     /**
