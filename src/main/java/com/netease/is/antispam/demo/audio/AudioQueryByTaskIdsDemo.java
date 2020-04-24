@@ -27,7 +27,7 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  * 调用易盾反垃圾云服务查询点播语音结果接口API示例
  *
  * @author maxiaofeng
- * @version 2019-04-11
+ * @version 2020-02-28
  */
 public class AudioQueryByTaskIdsDemo {
     /**
@@ -45,7 +45,7 @@ public class AudioQueryByTaskIdsDemo {
     /**
      * 易盾反垃圾云服务查询点播语音结果接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/audio/query/task";
+    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/query/task";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -61,7 +61,7 @@ public class AudioQueryByTaskIdsDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v1");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -83,20 +83,88 @@ public class AudioQueryByTaskIdsDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("result");
-            if (resultArray.size() == 0) {
-                System.out.println("暂无回调数据");
+            JsonArray antispamArray = resultObject.getAsJsonArray("antispam");
+            if (antispamArray == null || antispamArray.size() == 0) {
+                System.out.println("暂无审核回调数据");
             } else {
-                for (JsonElement jsonElement : resultArray) {
+                for (JsonElement jsonElement : antispamArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
-                    int action = jObject.get("action").getAsInt();
                     String taskId = jObject.get("taskId").getAsString();
-                    JsonArray labelArray = jObject.getAsJsonArray("labels");
-                    if (action == 0) {
-                        System.out.println(String.format("callback=%s，结果：通过", taskId));
-                    } else if (action == 2) {
-                        System.out
-                                .println(String.format("callback=%s，结果：不通过，分类信息如下：%s", taskId, labelArray.toString()));
+                    int status = jObject.get("status").getAsInt();
+                    if (status == 20) {
+                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
+                    } else if (status == 30) {
+                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    } else {
+                        int action = jObject.get("action").getAsInt();
+                        JsonArray labelArray = jObject.getAsJsonArray("labels");
+                        if (action == 0) {
+                            System.out.println(String.format("callback=%s，结果：通过", taskId));
+                        } else if (action == 2) {
+                            System.out.println(
+                                    String.format("callback=%s，结果：不通过，分类信息如下：%s", taskId, labelArray.toString()));
+                        }
+                    }
+                }
+            }
+            JsonArray languageArray = resultObject.getAsJsonArray("language");
+            if (languageArray == null || languageArray.size() == 0) {
+                System.out.println("暂无语种检测数据");
+            } else {
+                for (JsonElement jsonElement : languageArray) {
+                    JsonObject jObject = jsonElement.getAsJsonObject();
+                    int status = jObject.get("status").getAsInt();
+                    String taskId = jObject.get("taskId").getAsString();
+                    if (status == 20) {
+                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
+                    } else if (status == 30) {
+                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    } else {
+                        JsonArray detailsArray = jObject.getAsJsonArray("details");
+                        if (detailsArray != null && detailsArray.size() > 0) {
+                            for (JsonElement details : detailsArray) {
+                                JsonObject language = details.getAsJsonObject();
+                                String type = language.get("type").getAsString();
+                                JsonArray segmentsArray = language.getAsJsonArray("segments");
+                                if (segmentsArray != null && segmentsArray.size() > 0) {
+                                    for (JsonElement segmentObj : segmentsArray) {
+                                        JsonObject segment = segmentObj.getAsJsonObject();
+                                        System.out.println(String.format("taskId=%s，语种类型=%s，开始时间=%s秒，结束时间=%s秒", taskId,
+                                                type, segment.get("startTime").getAsInt(),
+                                                segment.get("endTime").getAsInt()));
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            JsonArray asrArray = resultObject.getAsJsonArray("asr");
+            if (asrArray == null || asrArray.size() == 0) {
+                System.out.println("暂无语音翻译数据");
+            } else {
+                for (JsonElement jsonElement : asrArray) {
+                    JsonObject jObject = jsonElement.getAsJsonObject();
+                    int status = jObject.get("status").getAsInt();
+                    String taskId = jObject.get("taskId").getAsString();
+                    if (status == 20) {
+                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
+                    } else if (status == 30) {
+                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    } else {
+                        JsonArray detailsArray = jObject.getAsJsonArray("details");
+                        if (detailsArray != null && detailsArray.size() > 0) {
+                            for (JsonElement details : detailsArray) {
+                                JsonObject asr = details.getAsJsonObject();
+                                int startTime = asr.get("startTime").getAsInt();
+                                int endTime = asr.get("endTime").getAsInt();
+                                String content = asr.get("content").getAsString();
+                                System.out.println(String.format("taskId=%s，文字翻译结果=%s，开始时间=%s秒，结束时间=%s秒", taskId,
+                                        content, startTime, endTime));
+                            }
+                        }
+
                     }
                 }
             }
