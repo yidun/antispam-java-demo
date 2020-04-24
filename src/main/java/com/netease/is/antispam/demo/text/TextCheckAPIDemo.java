@@ -94,8 +94,9 @@ public class TextCheckAPIDemo {
                 JsonObject lObject = labelElement.getAsJsonObject();
                 int label = lObject.get("label").getAsInt();
                 int level = lObject.get("level").getAsInt();
-                JsonObject detailsObject=lObject.getAsJsonObject("details");
-                JsonArray hintArray=detailsObject.getAsJsonArray("hint");
+                JsonObject detailsObject = lObject.getAsJsonObject("details");
+                JsonArray hint = detailsObject.getAsJsonArray("hint");
+                JsonArray subLabels = lObject.getAsJsonArray("subLabels");
             }*/
             if (action == 0) {
                 System.out.println(String.format("taskId=%s，文本机器检测结果：通过", taskId));
