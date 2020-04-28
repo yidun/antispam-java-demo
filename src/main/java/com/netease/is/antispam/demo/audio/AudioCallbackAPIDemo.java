@@ -43,7 +43,7 @@ public class AudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务音频离线结果获取接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/callback/results";
+    private final static String API_URL = "http://as.dun.163yun.com/v3/audio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -91,13 +91,15 @@ public class AudioCallbackAPIDemo {
                         if (action == 0) {
                             System.out.println(String.format("taskId=%s，结果：通过", taskId));
                         } else if (action == 1 || action == 2) {
-                            // for (JsonElement labelElement : labelArray) {
-                            // 	JsonObject lObject = labelElement.getAsJsonObject();
-                            // 	int label = lObject.get("label").getAsInt();
-                            // 	int level = lObject.get("level").getAsInt();
-                            // 	JsonObject detailsObject=lObject.getAsJsonObject("details");
-                            // 	JsonArray hintArray=detailsObject.getAsJsonArray("hint");
-                            // }
+                             for (JsonElement labelElement : labelArray) {
+                             	JsonObject lObject = labelElement.getAsJsonObject();
+                             	int label = lObject.get("label").getAsInt();
+                             	int level = lObject.get("level").getAsInt();
+                             	JsonObject details = lObject.getAsJsonObject("details");
+                             	JsonArray hintArray = details.getAsJsonArray("hint");
+                             	// 二级细分类
+                             	JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
+                             }
                             System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId, action == 1 ? "不确定" : "不通过",
                                     labelArray.toString()));
                         }

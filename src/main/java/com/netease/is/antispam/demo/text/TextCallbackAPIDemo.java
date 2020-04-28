@@ -20,10 +20,8 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务文本离线检测结果获取接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾云服务文本离线检测结果获取接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2.
+ * commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java 3. gson，用于做json解析
  * 
  * @author hzgaomin
  * @version 2016年2月3日
@@ -36,7 +34,7 @@ public class TextCallbackAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务文本离线检测结果获取接口地址 */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/text/callback/results";
+    private final static String API_URL = "http://as.dun.163yun.com/v3/text/callback/results";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
@@ -76,18 +74,17 @@ public class TextCallbackAPIDemo {
                 String taskId = jObject.get("taskId").getAsString();
                 String callback = jObject.get("callback").getAsString();
                 JsonArray labelArray = jObject.getAsJsonArray("labels");
-                /*for (JsonElement labelElement : labelArray) {
-                    JsonObject lObject = labelElement.getAsJsonObject();
-                    int label = lObject.get("label").getAsInt();
-                    int level = lObject.get("level").getAsInt();
-                    JsonObject detailsObject=lObject.getAsJsonObject("details");
-                    JsonArray hintArray=detailsObject.getAsJsonArray("hint");
-                }*/
+                /*
+                 * for (JsonElement labelElement : labelArray) { JsonObject lObject = labelElement.getAsJsonObject();
+                 * int label = lObject.get("label").getAsInt(); int level = lObject.get("level").getAsInt(); JsonObject
+                 * detailsObject=lObject.getAsJsonObject("details"); JsonArray
+                 * hintArray=detailsObject.getAsJsonArray("hint"); }
+                 */
                 if (action == 0) {
                     System.out.println(String.format("taskId=%s，callback=%s，文本人工复审结果：通过", taskId, callback));
                 } else if (action == 2) {
                     System.out.println(String.format("taskId=%s，callback=%s，文本人工复审结果：不通过，分类信息如下：%s", taskId, callback,
-                                                     labelArray.toString()));
+                            labelArray.toString()));
                 }
             }
         } else {

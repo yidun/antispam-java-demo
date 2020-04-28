@@ -23,8 +23,8 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
 /**
  * 调用易盾反垃圾云服务获取直播语音离线结果接口API示例
  *
- * @author maxiaofeng
- * @version 2019-04-11
+ * @author yd-dev
+ * @version 2020-04-22
  */
 public class LiveAudioCallbackAPIDemo {
     /**
@@ -42,7 +42,7 @@ public class LiveAudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/callback/results";
+    private final static String API_URL = "http://as-liveaudio.dun.163yun.com/v2/liveaudio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -57,7 +57,7 @@ public class LiveAudioCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v1.1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -74,33 +74,22 @@ public class LiveAudioCallbackAPIDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonArray resultArray = resultObject.getAsJsonArray("result");
-            if (resultArray.size() == 0) {
+            if (null == resultArray || resultArray.size() == 0) {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
-                    int asrStatus = jObject.get("asrStatus").getAsInt();
-                    long startTime = jObject.get("startTime").getAsLong();
-                    long endTime = jObject.get("endTime").getAsLong();
-                    if (asrStatus == 4) {
-                        int asrResult = jObject.get("asrResult").getAsInt();
-                        System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
+                    String callback = jObject.get("callback").getAsString();
+                    String dataId = jObject.get("dataId").getAsString();
+                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s", taskId, callback, dataId));
+
+                    if (jObject.has("evidences")) {
+                        parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
+                    } else if (jObject.has("reviewEvidences")) {
+                        parseHuman(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
                     } else {
-                        int action = jObject.get("action").getAsInt();
-                        JsonArray segmentArray = jObject.getAsJsonArray("segments");
-                        if (action == 0) {
-                            System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
-                                    endTime, segmentArray.toString()));
-                        } else if (action == 1 || action == 2) {
-                            // for (JsonElement labelElement : segmentArray) {
-                            // JsonObject lObject = labelElement.getAsJsonObject();
-                            // int label = lObject.get("label").getAsInt();
-                            // int level = lObject.get("level").getAsInt();
-                            // }
-                            System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
-                                    action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
-                        }
+                        System.out.println(String.format("Invalid result: %s", jObject.toString()));
                     }
                 }
             }
@@ -109,4 +98,77 @@ public class LiveAudioCallbackAPIDemo {
         }
     }
 
+    /**
+     * 机审信息
+     */
+    private static void parseMachine(JsonObject evidences, String taskId) {
+        System.out.println("=== 机审信息 ===");
+        int asrStatus = evidences.get("asrStatus").getAsInt();
+        long startTime = evidences.get("startTime").getAsLong();
+        long endTime = evidences.get("endTime").getAsLong();
+        if (asrStatus == 4) {
+            int asrResult = evidences.get("asrResult").getAsInt();
+            System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
+        } else {
+            int action = evidences.get("action").getAsInt();
+            JsonArray segmentArray = evidences.getAsJsonArray("segments");
+            if (action == 0) {
+                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
+                        endTime, segmentArray.toString()));
+            } else if (action == 1 || action == 2) {
+                for (JsonElement labelElement : segmentArray) {
+                    JsonObject lObject = labelElement.getAsJsonObject();
+                    int label = lObject.get("label").getAsInt();
+                    int level = lObject.get("level").getAsInt();
+                    String evidence = lObject.get("evidence").getAsString();
+                }
+                System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
+                        action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
+            }
+        }
+        System.out.println("============");
+    }
+
+    /**
+     * 人审信息
+     */
+    private static void parseHuman(JsonObject reviewEvidences, String taskId) {
+        System.out.println("=== 人审信息 ===");
+        // 操作
+        int action = reviewEvidences.get("action").getAsInt();
+        // 判断时间点
+        long actionTime = reviewEvidences.get("actionTime").getAsLong();
+        // 违规类型
+        int spamType = reviewEvidences.get("spamType").getAsInt();
+        // 违规详情
+        String spamDetail = reviewEvidences.get("spamDetail").getAsString();
+        // 警告次数
+        int warnCount = reviewEvidences.get("warnCount").getAsInt();
+        // 提示次数
+        int promptCount = reviewEvidences.get("promptCount").getAsInt();
+        // 证据信息
+        JsonArray segments = reviewEvidences.get("segments").getAsJsonArray();
+        // 检测状态
+        int status = reviewEvidences.get("status").getAsInt();
+        String statusStr = "未知";
+        if (status == 2) {
+            statusStr = "检测中";
+        } else if (status == 3) {
+            statusStr = "检测完成";
+        }
+
+        if (action == 2) {
+            // 警告
+            System.out.println(String.format("警告, taskId:%s, 检测状态:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, statusStr, warnCount, spamDetail, segments.toString()));
+        } else if (action == 3) {
+            // 断流
+            System.out.println(String.format("断流, taskId:%s, 检测状态:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, statusStr, warnCount, spamDetail, segments.toString()));
+        } else if (action == 4) {
+            // 提示
+            System.out.println(String.format("提示, taskId:%s, 检测状态:%s, 提示次数:%s, 违规详情:%s, 证据信息:%s", taskId, statusStr, promptCount, spamDetail, segments.toString()));
+        } else {
+            System.out.println(String.format("人审信息：%s", reviewEvidences.toString()));
+        }
+        System.out.println("================");
+    }
 }
