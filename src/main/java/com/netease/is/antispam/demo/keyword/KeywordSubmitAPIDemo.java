@@ -7,6 +7,7 @@
 package com.netease.is.antispam.demo.keyword;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -76,8 +77,13 @@ public class KeywordSubmitAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray ids = resultObject.get("result").getAsJsonArray();
-            System.out.println(String.format("敏感词提交结果: %s", ids));
+            JsonArray resultArray = resultObject.get("result").getAsJsonArray();
+            for (JsonElement jsonElement : resultArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String keyword = jObject.get("keyword").getAsString();
+                Long id = jObject.get("id").getAsLong();
+                System.out.println(String.format("敏感词提交成功，keyword: %s，id: %s", keyword, id));
+            }
 
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
