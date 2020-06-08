@@ -42,7 +42,7 @@ public class TextCheckAPIDemo {
     /**
      * 易盾反垃圾云服务文本在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163yun.com/v3/text/check";
+    private final static String API_URL = "http://as.dun.163.com/v3/text/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

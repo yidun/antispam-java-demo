@@ -36,7 +36,7 @@ public class LiveVideoSolutionSubmitAPIDemo {
     /**
      * 易盾反垃圾直播音视频解决方案在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163yun.com/v1/livewallsolution/submit";
+    private final static String API_URL = "http://as.dun.163.com/v1/livewallsolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
