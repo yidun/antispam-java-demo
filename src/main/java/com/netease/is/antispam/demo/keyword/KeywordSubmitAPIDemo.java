@@ -38,7 +38,7 @@ public class KeywordSubmitAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务敏感词批量提交接口地址 */
-    private final static String API_URL = "http://as.dun.163yun.com/v1/keyword/submit";
+    private final static String API_URL = "http://as.dun.163.com/v1/keyword/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
