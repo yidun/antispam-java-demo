@@ -105,6 +105,17 @@ public class VideoSolutionQueryAPIDemo {
                                         video.get("taskId").getAsString(), video.get("status").getAsInt(),
                                         video.get("level").getAsInt()));
                             }
+                        } else if (jObject.has("reviewEvidences")) {
+                            JsonObject reviewEvidences = jObject.get("reviewEvidences").getAsJsonObject();
+                            String reason = reviewEvidences.get("reason").getAsString();
+                            JsonObject detail = reviewEvidences.get("detail").getAsJsonObject();
+                            JsonArray text = detail.get("text").getAsJsonArray();
+                            JsonArray image = detail.get("image").getAsJsonArray();
+                            JsonArray audio = detail.get("audio").getAsJsonArray();
+                            JsonArray video = detail.get("video").getAsJsonArray();
+                            System.out.println(
+                                    String.format("人审证据信息, 音视频taskId:%s, reason:%s, 文本:%s, 图片:%s, 语音:%s, 视频:%s", taskId,
+                                            reason, text, image, audio, video));
                         }
                     } else if (status == 20) {
                         System.out.println(String.format("点播音视频, taskId:%s, 数据非7天内", taskId));
