@@ -26,8 +26,8 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
 /**
  * 调用易盾反垃圾云服务查询点播语音结果接口API示例
  *
- * @author maxiaofeng
- * @version 2020-02-28
+ * @author yd-dev
+ * @version 2020-04-22
  */
 public class AudioQueryByTaskIdsDemo {
     /**
@@ -45,7 +45,7 @@ public class AudioQueryByTaskIdsDemo {
     /**
      * 易盾反垃圾云服务查询点播语音结果接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/audio/query/task";
+    private final static String API_URL = "http://as.dun.163.com/v3/audio/query/task";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -91,16 +91,23 @@ public class AudioQueryByTaskIdsDemo {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
                     int status = jObject.get("status").getAsInt();
-                    if (status == 20) {
-                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
-                    } else if (status == 30) {
-                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    if (status == 30) {
+                        System.out.println(String.format("antispam callback taskId=%s，结果：数据不存在", taskId));
                     } else {
                         int action = jObject.get("action").getAsInt();
                         JsonArray labelArray = jObject.getAsJsonArray("labels");
                         if (action == 0) {
-                            System.out.println(String.format("callback=%s，结果：通过", taskId));
+                            System.out.println(String.format("callback taskId=%s，结果：通过", taskId));
                         } else if (action == 2) {
+                            for (JsonElement labelInfo : labelArray) {
+                                JsonObject lObject = labelInfo.getAsJsonObject();
+                                int label = lObject.get("label").getAsInt();
+                                int level = lObject.get("level").getAsInt();
+                                JsonObject details = lObject.get("details").getAsJsonObject();
+                                JsonArray hintArr = details.getAsJsonArray("hint");
+                                // 二级细分类
+                                JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
+                            }
                             System.out.println(
                                     String.format("callback=%s，结果：不通过，分类信息如下：%s", taskId, labelArray.toString()));
                         }
@@ -115,10 +122,8 @@ public class AudioQueryByTaskIdsDemo {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     int status = jObject.get("status").getAsInt();
                     String taskId = jObject.get("taskId").getAsString();
-                    if (status == 20) {
-                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
-                    } else if (status == 30) {
-                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    if (status == 30) {
+                        System.out.println(String.format("language callback taskId=%s，结果：数据不存在", taskId));
                     } else {
                         JsonArray detailsArray = jObject.getAsJsonArray("details");
                         if (detailsArray != null && detailsArray.size() > 0) {
@@ -136,7 +141,6 @@ public class AudioQueryByTaskIdsDemo {
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -148,10 +152,8 @@ public class AudioQueryByTaskIdsDemo {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     int status = jObject.get("status").getAsInt();
                     String taskId = jObject.get("taskId").getAsString();
-                    if (status == 20) {
-                        System.out.println(String.format("callback=%s，结果：非7天内的数据", taskId));
-                    } else if (status == 30) {
-                        System.out.println(String.format("callback=%s，结果：数据不存在", taskId));
+                    if (status == 30) {
+                        System.out.println(String.format("asr callback taskId=%s，结果：数据不存在", taskId));
                     } else {
                         JsonArray detailsArray = jObject.getAsJsonArray("details");
                         if (detailsArray != null && detailsArray.size() > 0) {
@@ -164,7 +166,6 @@ public class AudioQueryByTaskIdsDemo {
                                         content, startTime, endTime));
                             }
                         }
-
                     }
                 }
             }

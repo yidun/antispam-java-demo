@@ -19,6 +19,7 @@ http://dun.163.com
 ├── LiveVideoSubmitAPIDemo.java　直播流信息提交接口演示
 ├── LiveVideoCallbackAPIDemo.java 直播流检测结果获取接口演示
 ├── LiveVideoQueryByTaskIdsDemo.java 直播视频结果查询接口演示
+├── LiveDataQueryByTaskIdDemo.java 直播视频截图结果查询接口演示
 ├── LiveWallSubmitAPIDemo.java 直播电视墙信息提交接口演示
 ├── LiveWallCallbackAPIDemo.java 直播电视墙检测结果获取接口演示
 ├── VideoSubmitAPIDemo.java　视频点播信息提交接口演示
@@ -31,6 +32,8 @@ http://dun.163.com
 ├── VideoSolutionSubmitApiDemo.java 点播音视频解决方案在线检测提交接口演示
 ├── VideoSolutionCallbackApiDemo.java 点播音视频解决方案检测结果获取接口演示
 ├── KeywordSubmitAPIDemo.java 敏感词提交接口演示
+├── KeywordDeleteAPIDemo.java 敏感词删除接口演示
+├── KeywordQueryAPIDemo.java 敏感词查询接口演示
 ├── ListSubmitAPIDemo.java 名单提交接口演示
 ├── CallbackReceiveController.java 主动回调数据接收接口演示
 ├── HttpClient4Utils.java httpclient封装类

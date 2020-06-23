@@ -40,7 +40,7 @@ public class LiveAudioCheckAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "https://as-liveaudio.dun.163yun.com/v1/liveaudio/check";
+    private final static String API_URL = "http://as-liveaudio.dun.163.com/v1/liveaudio/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

@@ -42,7 +42,7 @@ public class TextCheckAPIDemo {
     /**
      * 易盾反垃圾云服务文本在线检测接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v3/text/check";
+    private final static String API_URL = "http://as.dun.163.com/v3/text/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -94,8 +94,9 @@ public class TextCheckAPIDemo {
                 JsonObject lObject = labelElement.getAsJsonObject();
                 int label = lObject.get("label").getAsInt();
                 int level = lObject.get("level").getAsInt();
-                JsonObject detailsObject=lObject.getAsJsonObject("details");
-                JsonArray hintArray=detailsObject.getAsJsonArray("hint");
+                JsonObject detailsObject = lObject.getAsJsonObject("details");
+                JsonArray hint = detailsObject.getAsJsonArray("hint");
+                JsonArray subLabels = lObject.getAsJsonArray("subLabels");
             }*/
             if (action == 0) {
                 System.out.println(String.format("taskId=%s，文本机器检测结果：通过", taskId));

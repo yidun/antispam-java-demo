@@ -6,6 +6,8 @@
 
 package com.netease.is.antispam.demo.keyword;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -36,7 +38,7 @@ public class KeywordSubmitAPIDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务敏感词批量提交接口地址 */
-    private final static String API_URL = "https://as.dun.163yun.com/v1/keyword/submit";
+    private final static String API_URL = "http://as.dun.163.com/v1/keyword/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
@@ -75,8 +77,13 @@ public class KeywordSubmitAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            Boolean result = resultObject.get("result").getAsBoolean();
-            System.out.println(String.format("敏感词提交结果: %s", result));
+            JsonArray resultArray = resultObject.get("result").getAsJsonArray();
+            for (JsonElement jsonElement : resultArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String keyword = jObject.get("keyword").getAsString();
+                Long id = jObject.get("id").getAsLong();
+                System.out.println(String.format("敏感词提交成功，keyword: %s，id: %s", keyword, id));
+            }
 
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
