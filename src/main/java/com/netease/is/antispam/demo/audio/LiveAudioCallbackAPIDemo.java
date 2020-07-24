@@ -82,7 +82,9 @@ public class LiveAudioCallbackAPIDemo {
                     String taskId = jObject.get("taskId").getAsString();
                     String callback = jObject.get("callback").getAsString();
                     String dataId = jObject.get("dataId").getAsString();
-                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s", taskId, callback, dataId));
+                    String content = jObject.get("content").getAsString();
+                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s, content:%s", taskId, callback,
+                            dataId, content));
 
                     if (jObject.has("evidences")) {
                         parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);

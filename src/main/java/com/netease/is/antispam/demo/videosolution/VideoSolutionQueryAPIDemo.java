@@ -7,12 +7,15 @@
 package com.netease.is.antispam.demo.videosolution;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -55,6 +58,11 @@ public class VideoSolutionQueryAPIDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
+
+        Set<String> taskIds = new HashSet<String>();
+        taskIds.add("202b1d65f5854cecadcb24382b681c1a");
+        taskIds.add("0f0345933b05489c9b60635b0c8cc721");
+        params.put("taskIds", new Gson().toJson(taskIds));
 
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
