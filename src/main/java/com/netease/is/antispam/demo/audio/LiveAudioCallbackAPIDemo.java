@@ -82,9 +82,7 @@ public class LiveAudioCallbackAPIDemo {
                     String taskId = jObject.get("taskId").getAsString();
                     String callback = jObject.get("callback").getAsString();
                     String dataId = jObject.get("dataId").getAsString();
-                    String content = jObject.get("content").getAsString();
-                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s, content:%s", taskId, callback,
-                            dataId, content));
+                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s", taskId, callback, dataId));
 
                     if (jObject.has("evidences")) {
                         parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
@@ -108,6 +106,7 @@ public class LiveAudioCallbackAPIDemo {
         int asrStatus = evidences.get("asrStatus").getAsInt();
         long startTime = evidences.get("startTime").getAsLong();
         long endTime = evidences.get("endTime").getAsLong();
+        String content = evidences.get("content").getAsString();
         if (asrStatus == 4) {
             int asrResult = evidences.get("asrResult").getAsInt();
             System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
@@ -115,8 +114,8 @@ public class LiveAudioCallbackAPIDemo {
             int action = evidences.get("action").getAsInt();
             JsonArray segmentArray = evidences.getAsJsonArray("segments");
             if (action == 0) {
-                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
-                        endTime, segmentArray.toString()));
+                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s，原文:%s", taskId, startTime,
+                        endTime, segmentArray.toString(), content));
             } else if (action == 1 || action == 2) {
                 for (JsonElement labelElement : segmentArray) {
                     JsonObject lObject = labelElement.getAsJsonObject();
@@ -124,8 +123,8 @@ public class LiveAudioCallbackAPIDemo {
                     int level = lObject.get("level").getAsInt();
                     String evidence = lObject.get("evidence").getAsString();
                 }
-                System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
-                        action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
+                System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s，原文:%s", taskId,
+                        action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString(), content));
             }
         }
         System.out.println("============");
