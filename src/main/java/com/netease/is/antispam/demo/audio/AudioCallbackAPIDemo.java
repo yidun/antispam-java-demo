@@ -103,6 +103,20 @@ public class AudioCallbackAPIDemo {
                             System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId, action == 1 ? "不确定" : "不通过",
                                     labelArray.toString()));
                         }
+						JsonArray segments = jObject.getAsJsonArray("segments");
+                        if (segments != null && segments.size() > 0) {
+                            for (JsonElement segmentJson : segments) {
+                                JsonObject segment = segmentJson.getAsJsonObject();
+                                int startTime = segment.get("startTime").getAsInt();
+                                int endTime = segment.get("endTime").getAsInt();
+                                String content = segment.get("content").getAsString();
+                                int label = segment.get("label").getAsInt();
+                                int level = segment.get("level").getAsInt();
+                                System.out
+                                        .println(String.format("taskId=%s，开始时间：%s秒，结束时间：%s秒，内容：%s， label:%s, level:%s",
+                                                taskId, startTime, endTime, content, label, level));
+                            }
+                        }
                     }
                 }
             }
