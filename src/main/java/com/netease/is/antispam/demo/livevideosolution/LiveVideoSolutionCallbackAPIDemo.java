@@ -6,18 +6,19 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * 调用易盾反垃圾云服务获取直播音视频解决方案离线结果接口API示例
@@ -52,7 +53,8 @@ public class LiveVideoSolutionCallbackAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v2");
+        // 直播音视频解决方案版本v2.1及以上语音二级细分类结构进行调整
+        params.put("version", "v2.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -78,7 +80,8 @@ public class LiveVideoSolutionCallbackAPIDemo {
                     String callback = jObject.get("callback").getAsString();
                     String dataId = jObject.get("dataId").getAsString();
                     int status = jObject.get("status").getAsInt();
-                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s, status:%s", taskId, callback, dataId, status));
+                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s, status:%s", taskId, callback,
+                            dataId, status));
                     if (jObject.has("evidences")) {
                         JsonObject evidences = jObject.get("evidences").getAsJsonObject();
                         if (evidences.has("audio")) {
@@ -102,6 +105,7 @@ public class LiveVideoSolutionCallbackAPIDemo {
 
     /**
      * 音频机审信息
+     * 
      * @param audioEvidence
      */
     private static void parseAudioEvidence(JsonObject audioEvidence, String taskId) {
@@ -116,14 +120,20 @@ public class LiveVideoSolutionCallbackAPIDemo {
             int action = audioEvidence.get("action").getAsInt();
             JsonArray segmentArray = audioEvidence.getAsJsonArray("segments");
             if (action == 0) {
-                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
-                        endTime, segmentArray.toString()));
+                System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime, endTime,
+                        segmentArray.toString()));
             } else if (action == 1 || action == 2) {
                 for (JsonElement labelElement : segmentArray) {
                     JsonObject lObject = labelElement.getAsJsonObject();
                     int label = lObject.get("label").getAsInt();
                     int level = lObject.get("level").getAsInt();
-                    String evidence = lObject.get("evidence").getAsString();
+                    // 注意二级细分类结构
+                    JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
+                    if (subLabels != null && subLabels.size() > 0) {
+                        for (int i = 0; i < subLabels.size(); i++) {
+                            JsonObject subLabelObj = subLabels.get(i).getAsJsonObject();
+                        }
+                    }
                 }
                 System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
                         action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
@@ -134,6 +144,7 @@ public class LiveVideoSolutionCallbackAPIDemo {
 
     /**
      * 视频计审信息
+     * 
      * @param videoEvidence
      */
     private static void parseVideoEvidence(JsonObject videoEvidence, String taskId) {
@@ -161,6 +172,7 @@ public class LiveVideoSolutionCallbackAPIDemo {
 
     /**
      * 人审信息
+     * 
      * @param humanEvidence
      */
     private static void parseHumanEvidence(JsonObject humanEvidence, String taskId) {
@@ -180,10 +192,12 @@ public class LiveVideoSolutionCallbackAPIDemo {
 
         if (action == 2) {
             // 警告
-            System.out.println(String.format("警告, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail, evidence.toString()));
+            System.out.println(String.format("警告, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail,
+                    evidence.toString()));
         } else if (action == 3) {
             // 断流
-            System.out.println(String.format("断流, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail, evidence.toString()));
+            System.out.println(String.format("断流, taskId:%s, 警告次数:%s, 违规详情:%s, 证据信息:%s", taskId, warnCount, detail,
+                    evidence.toString()));
         } else {
             System.out.println(String.format("人审信息：%s", humanEvidence.toString()));
         }

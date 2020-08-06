@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * 调用易盾反垃圾直播音视频解决方案检测提交接口API示例
@@ -36,7 +37,7 @@ public class LiveVideoSolutionSubmitAPIDemo {
     /**
      * 易盾反垃圾直播音视频解决方案在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/livewallsolution/submit";
+    private final static String API_URL = "http://as.dun.163.com/v2/livewallsolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -51,7 +52,8 @@ public class LiveVideoSolutionSubmitAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.0");
+        // 直播音视频解决方案版本v2.1及以上语音二级细分类结构进行调整
+        params.put("version", "v2.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 

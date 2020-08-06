@@ -51,7 +51,8 @@ public class VideoSolutionSubmitAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        // 点播音视频解决方案版本v1.1及以上语音二级细分类subLabels结构进行调整
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
