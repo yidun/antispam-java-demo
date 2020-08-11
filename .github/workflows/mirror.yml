@@ -16,10 +16,9 @@ jobs:
 
         with:
 
-          REMOTE: https://gitee.com/${{ secrets.GITEE_USERNAME }}/somerepo.git
+          REMOTE: https://gitee.com/netease_yidun/antispam-java-demo.git
 
           GIT_USERNAME: ${{ secrets.GITEE_USERNAME }}
 
           GIT_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
 
-          DEBUG: "true"
