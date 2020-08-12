@@ -20,7 +20,7 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务文本批量提交接口API示例，该示例依赖以下jar包：
+ * 调用易盾反垃圾云服务审核系统文本批量提交接口API示例，该示例依赖以下jar包：
  * 1. httpclient，用于发送http请求
  * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
@@ -35,7 +35,7 @@ public class TextSubmitAPIDemo {
     private final static String SECRETKEY = "your_secret_key";
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务文本离线检测结果获取接口地址 */
+    /** 易盾反垃圾云服务审核系统文本批量提交接口 */
     private final static String API_URL = "http://as.dun.163.com/v1/text/submit";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
