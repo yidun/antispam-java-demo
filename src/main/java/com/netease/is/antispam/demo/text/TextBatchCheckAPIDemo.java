@@ -66,6 +66,15 @@ public class TextBatchCheckAPIDemo {
         JsonObject text1 = new JsonObject();
         text1.addProperty("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         text1.addProperty("content", "易盾批量检测接口！v3接口!");
+        // text1.addProperty("dataType", "1");
+        // text1.addProperty("ip", "123.115.77.137");
+        // text1.addProperty("account", "java@163.com");
+        // text1.addProperty("deviceType", "4");
+        // text1.addProperty("deviceId", "92B1E5AA-4C3D-4565-A8C2-86E297055088");
+        // text1.addProperty("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
+        // text1.addProperty("publishTime", String.valueOf(System.currentTimeMillis()));
+        // 主动回调地址url,如果设置了则走主动回调逻辑
+        // text1.addProperty("callbackUrl", "http://***");
         textArray.add(text1);
 
         JsonObject text2 = new JsonObject();
