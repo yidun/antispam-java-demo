@@ -7,6 +7,7 @@ http://dun.163.com
 ```
 .
 ├── TextCheckAPIDemo.java 文本在线检测接口演示
+├── TextBatchCheckAPIDemo.java 文本批量在线检测接口演示
 ├── TextCallbackAPIDemo.java　文本离线结果获取接口演示
 ├── TextQueryByTaskIdsDemo.java　文本检测结果查询接口演示
 ├── TextSubmitAPIDemo.java　文本批量提交接口演示

@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import com.google.gson.JsonElement;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -52,7 +52,8 @@ public class VideoSolutionCallbackAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        // 点播音视频解决方案版本v1.1及以上语音二级细分类subLabels结构进行调整
+        params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -77,6 +78,41 @@ public class VideoSolutionCallbackAPIDemo {
                     String taskId = jObject.get("taskId").getAsString();
                     int result = jObject.get("result").getAsInt();
                     System.out.println(String.format("taskId:%s, result:%s", taskId, result));
+                    if (jObject.has("evidences")) {
+                        JsonObject evidences = jObject.get("evidences").getAsJsonObject();
+                        if (evidences.has("audio")) {
+                            JsonObject audio = evidences.get("audio").getAsJsonObject();
+                            int asrStatus = audio.get("asrStatus").getAsInt();
+                            if (asrStatus == 4) {
+                                int asrResult = audio.get("asrResult").getAsInt();
+                                System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
+                            } else {
+                                int action = audio.get("action").getAsInt();
+                                JsonArray labelArray = audio.getAsJsonArray("labels");
+                                if (action == 0) {
+                                    System.out.println(String.format("taskId=%s，结果：通过", taskId));
+                                } else if (action == 1 || action == 2) {
+                                    for (JsonElement labelElement : labelArray) {
+                                        JsonObject lObject = labelElement.getAsJsonObject();
+                                        int label = lObject.get("label").getAsInt();
+                                        int level = lObject.get("level").getAsInt();
+                                        // 注意二级细分类结构
+                                        JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
+                                        if (subLabels != null && subLabels.size() > 0) {
+                                            for (int i = 0; i < subLabels.size(); i++) {
+                                                JsonObject subLabelObj = subLabels.get(i).getAsJsonObject();
+                                                String subLabel = subLabelObj.get("subLabel").getAsString();
+                                                JsonObject details = subLabelObj.getAsJsonObject("details");
+                                                JsonArray hintArray = details.getAsJsonArray("hint");
+                                            }
+                                        }
+                                    }
+                                    System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId,
+                                            action == 1 ? "不确定" : "不通过", labelArray.toString()));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } else {
