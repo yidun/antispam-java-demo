@@ -5,8 +5,10 @@
  */
 package com.netease.is.antispam.demo.utils;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.crypto.digests.SM3Digest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -47,34 +49,63 @@ public class SignatureUtils {
             }
         }
         // SECRETKEY:产品私有密钥 SECRETID:产品密钥ID BUSINESSID:业务ID,开通服务时，易盾会提供相关密钥信息
-        String serverSignature = genSignature(secretkey, params);
+        String serverSignature = genSignature(secretkey, request.getParameter("signatureMethod"), params);
         // 客户根据需要确认是否鉴权是否要精确到业务维度，不需要则去掉businessid.equals(businessId)
         return signature.equals(serverSignature) && secretid.equals(secretId) && businessid.equals(businessId);
     }
 
     /**
-     * 生成签名信息
-     *
-     * @param secretKey 产品私钥
-     * @param params    接口请求参数名和参数值map，不包括signature参数名
+     * 默认使用md5方式
+     * @param secretKey
+     * @param params
      * @return
-     * @throws UnsupportedEncodingException
      */
-    public static String genSignature(String secretKey, Map<String, String> params) throws UnsupportedEncodingException {
+    public static String genSignature(String secretKey, Map<String, String> params) {
+        return genSignature(secretKey, params.get("signatureMethod"), params);
+    }
+
+    /**
+     * 通用签名方式
+     * @param secretKey
+     * @param signatureMethod
+     * @param params
+     * @return
+     */
+    public static String genSignature(String secretKey, String signatureMethod, Map<String, String> params) {
         // 1. 参数名按照ASCII码表升序排序
         String[] keys = params.keySet().toArray(new String[0]);
         Arrays.sort(keys);
-
         // 2. 按照排序拼接参数名与参数值
-        StringBuffer paramBuffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String key : keys) {
-            paramBuffer.append(key).append(params.get(key) == null ? "" : params.get(key));
+            sb.append(key).append(params.get(key));
         }
         // 3. 将secretKey拼接到最后
-        paramBuffer.append(secretKey);
+        sb.append(secretKey);
+        try {
+            // 默认使用MD5
+            SignatureMethodEnum signatureMethodEnum = StringUtils.isBlank(signatureMethod) ?
+                    SignatureMethodEnum.MD5 : SignatureMethodEnum.valueOf(StringUtils.upperCase(signatureMethod));
+            switch (signatureMethodEnum) {
+                case MD5:  return DigestUtils.md5Hex(sb.toString().getBytes("UTF-8"));
+                case SHA1: return DigestUtils.sha1Hex(sb.toString().getBytes("UTF-8"));
+                case SHA256: return DigestUtils.sha256Hex(sb.toString().getBytes("UTF-8"));
+                case SM3: return sm3DigestHex(sb.toString().getBytes("UTF-8"));
+                default:
+                    System.out.println("[ERROR] unsupported signature method: " + signatureMethod);
+                    return null;
+            }
+        } catch (Exception e) {
+            System.out.println("[ERROR] not supposed to happen: " + e.getMessage());
+        }
+        return null;
+    }
 
-        // 4. MD5是128位长度的摘要算法，用16进制表示，一个十六进制的字符能表示4个位，所以签名后的字符串长度固定为32个十六进制字符。
-        return DigestUtils.md5Hex(paramBuffer.toString().getBytes("UTF-8"));
+    public static String sm3DigestHex(byte[] srcData) {
+        SM3Digest sm3Digest = new SM3Digest();
+        sm3Digest.update(srcData, 0, srcData.length);
+        byte[] hash = new byte[sm3Digest.getDigestSize()];
+        sm3Digest.doFinal(hash, 0); return Hex.encodeHexString(hash);
     }
 
 }
