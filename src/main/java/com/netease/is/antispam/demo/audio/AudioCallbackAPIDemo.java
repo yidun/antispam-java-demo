@@ -5,23 +5,22 @@
  */
 package com.netease.is.antispam.demo.audio;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
- * 调用易盾反垃圾云服务音频离线结果获取接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务音频离线结果获取接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  *
  * @author hzhumin1
@@ -58,7 +57,8 @@ public class AudioCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3.1");
+        // 点播语音版本v3.2及以上二级细分类结构进行调整
+        params.put("version", "v3.3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
@@ -91,19 +91,25 @@ public class AudioCallbackAPIDemo {
                         if (action == 0) {
                             System.out.println(String.format("taskId=%s，结果：通过", taskId));
                         } else if (action == 1 || action == 2) {
-                             for (JsonElement labelElement : labelArray) {
-                             	JsonObject lObject = labelElement.getAsJsonObject();
-                             	int label = lObject.get("label").getAsInt();
-                             	int level = lObject.get("level").getAsInt();
-                             	JsonObject details = lObject.getAsJsonObject("details");
-                             	JsonArray hintArray = details.getAsJsonArray("hint");
-                             	// 二级细分类
-                             	JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
-                             }
-                            System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId, action == 1 ? "不确定" : "不通过",
-                                    labelArray.toString()));
+                            for (JsonElement labelElement : labelArray) {
+                                JsonObject lObject = labelElement.getAsJsonObject();
+                                int label = lObject.get("label").getAsInt();
+                                int level = lObject.get("level").getAsInt();
+                                // 注意二级细分类结构
+                                JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
+                                if (subLabels != null && subLabels.size() > 0) {
+                                    for (int i = 0; i < subLabels.size(); i++) {
+                                        JsonObject subLabelObj = subLabels.get(i).getAsJsonObject();
+                                        String subLabel = subLabelObj.get("subLabel").getAsString();
+                                        JsonObject details = subLabelObj.getAsJsonObject("details");
+                                        JsonArray hintArray = details.getAsJsonArray("hint");
+                                    }
+                                }
+                            }
+                            System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId,
+                                    action == 1 ? "不确定" : "不通过", labelArray.toString()));
                         }
-						JsonArray segments = jObject.getAsJsonArray("segments");
+                        JsonArray segments = jObject.getAsJsonArray("segments");
                         if (segments != null && segments.size() > 0) {
                             for (JsonElement segmentJson : segments) {
                                 JsonObject segment = segmentJson.getAsJsonObject();

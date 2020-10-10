@@ -5,21 +5,20 @@
  */
 package com.netease.is.antispam.demo.audio;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+
 /**
- * 调用易盾反垃圾云服务音频信息提交接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务音频信息提交接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  *
  * @author hzhumin1
@@ -52,7 +51,8 @@ public class AudioSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3.1");
+        // 点播语音版本v3.2及以上二级细分类结构进行调整
+        params.put("version", "v3.3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
 
