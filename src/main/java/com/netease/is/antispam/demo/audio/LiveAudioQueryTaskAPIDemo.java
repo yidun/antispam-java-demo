@@ -63,6 +63,7 @@ public class LiveAudioQueryTaskAPIDemo {
         params.put("endTime", "1578327000000");// 最长支持查10分钟跨度
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);

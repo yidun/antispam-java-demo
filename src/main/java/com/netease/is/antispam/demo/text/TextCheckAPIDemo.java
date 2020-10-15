@@ -60,6 +60,7 @@ public class TextCheckAPIDemo {
         params.put("version", "v3.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");

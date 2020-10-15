@@ -53,6 +53,7 @@ public class TextSyncAPIDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
         JsonArray textArray = new JsonArray();

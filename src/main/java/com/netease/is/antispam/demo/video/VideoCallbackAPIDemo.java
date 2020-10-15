@@ -53,6 +53,7 @@ public class VideoCallbackAPIDemo {
         params.put("version", "v3.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
