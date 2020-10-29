@@ -13,6 +13,8 @@ http://dun.163.com
 ├── TextSubmitAPIDemo.java　文本批量提交接口演示
 ├── ImageCheckAPIDemo.java　图片在线检测接口演示
 ├── ImageCallbackDemo.java 图片离线结果获取接口演示
+├── ImageAsyncCheckAPIDemo.java　图片离线检测接口演示
+├── ImageAsyncResultAPIDemo.java　图片离线检测结果获取接口演示
 ├── ImageListSubmitAPIDemo.java 图片名单添加接口演示
 ├── ImageListQueryAPIDemo.java 图片名单查询接口演示
 ├── ImageListDeleteAPIDemo.java 图片名单删除接口演示
