@@ -91,8 +91,7 @@ public class ImageAsyncCheckAPIDemo {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 String name = jObject.get("name").isJsonNull() ? "" : jObject.get("name").getAsString();
                 String taskId = jObject.get("taskId").getAsString();
-                int status = jObject.get("status").getAsInt();
-                System.out.println(String.format("taskId=%s，status=%s，name=%s，labels：", taskId, status, name));
+                System.out.println(String.format("name=%s，taskId=%s", name, taskId));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
