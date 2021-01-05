@@ -40,9 +40,9 @@ public class LiveAudioCallbackAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务图片在线检测接口地址
+     * 易盾反垃圾云服务直播语音回调接口地址
      */
-    private final static String API_URL = "http://as-liveaudio.dun.163.com/v2/liveaudio/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v3/liveaudio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -58,7 +58,7 @@ public class LiveAudioCallbackAPIDemo {
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
         // 直播语音版本v2.1及以上二级细分类结构进行调整
-        params.put("version", "v2.1");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
@@ -75,28 +75,51 @@ public class LiveAudioCallbackAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("result");
-            if (null == resultArray || resultArray.size() == 0) {
-                System.out.println("暂时没有结果需要获取，请稍后重试！");
-            } else {
-                for (JsonElement jsonElement : resultArray) {
-                    JsonObject jObject = jsonElement.getAsJsonObject();
-                    String taskId = jObject.get("taskId").getAsString();
-                    String callback = jObject.get("callback").getAsString();
-                    String dataId = jObject.get("dataId").getAsString();
-                    System.out.println(String.format("taskId:%s, callback:%s, dataId:%s", taskId, callback, dataId));
-
-                    if (jObject.has("evidences")) {
-                        parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
-                    } else if (jObject.has("reviewEvidences")) {
-                        parseHuman(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
-                    } else {
-                        System.out.println(String.format("Invalid result: %s", jObject.toString()));
-                    }
-                }
-            }
+            JsonObject result = resultObject.getAsJsonObject("result");
+            getAntispam(result);
+            getAsr(result);
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
+        }
+    }
+
+    private static void getAntispam(JsonObject result) {
+        JsonArray resultArray = result.getAsJsonArray("antispam");
+        if (null == resultArray || resultArray.size() == 0) {
+            System.out.println("暂时没有结果需要获取，请稍后重试！");
+        } else {
+            for (JsonElement jsonElement : resultArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String taskId = jObject.get("taskId").getAsString();
+                String callback = jObject.get("callback").getAsString();
+                String dataId = jObject.get("dataId").getAsString();
+                System.out.println(String.format("taskId:%s, callback:%s, dataId:%s", taskId, callback, dataId));
+
+                if (jObject.has("evidences")) {
+                    parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
+                } else if (jObject.has("reviewEvidences")) {
+                    parseHuman(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
+                } else {
+                    System.out.println(String.format("Invalid result: %s", jObject.toString()));
+                }
+            }
+        }
+    }
+
+    private static void getAsr(JsonObject result) {
+        JsonArray asrArray = result.getAsJsonArray("asr");
+        if (null == asrArray || asrArray.size() == 0) {
+            System.out.println("暂时没有结果需要获取，请稍后重试！");
+        } else {
+            for (JsonElement jsonElement : asrArray) {
+                JsonObject jObject = jsonElement.getAsJsonObject();
+                String taskId = jObject.get("taskId").getAsString();
+                String content = jObject.get("content").getAsString();
+                long startTime = jObject.get("startTime").getAsLong();
+                long endTime = jObject.get("endTime").getAsLong();
+                System.out.println(String.format("taskId:%s, content:%s, startTime:%s, endTime:%s",
+                        taskId, content, startTime, endTime));
+            }
         }
     }
 
