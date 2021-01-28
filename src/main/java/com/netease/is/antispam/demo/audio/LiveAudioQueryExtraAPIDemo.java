@@ -17,12 +17,12 @@ import org.apache.http.client.HttpClient;
 import java.util.Map;
 
 /**
- * 调用易盾反垃圾云服务查询直播语音人审操作记录接口API示例
+ * 调用易盾反垃圾云服务查询直播语音增值检测结果接口
  *
- * @author yd-dev
- * @version 2020-09-28
+ * @author maxiaofeng
+ * @version 2021年01月05日
  */
-public class LiveAudioQueryMonitorAPIDemo {
+public class LiveAudioQueryExtraAPIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -37,9 +37,9 @@ public class LiveAudioQueryMonitorAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务直播语音查询人审操作记录接口地址
+     * 易盾反垃圾云服务直播语音查询直播语音增值检测结果地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/liveaudio/query/monitor";
+    private final static String API_URL = "http://as.dun.163.com/v1/liveaudio/query/extra";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -50,7 +50,7 @@ public class LiveAudioQueryMonitorAPIDemo {
         // 1. 设置公共参数
         Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v1.0", "MD5");
         // 2. 设置私有参数
-        params.put("taskId", "26b3f1b1e1a4460c9012ee45857d8349");
+        params.put("taskId", "xxx");
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 
@@ -63,25 +63,22 @@ public class LiveAudioQueryMonitorAPIDemo {
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
             JsonObject result = resultObject.getAsJsonObject("result");
-            int status = result.get("status").getAsInt();
-            if (status == 0) {
-                JsonArray monitors = result.get("monitors").getAsJsonArray();
-                for (int i = 0; i < monitors.size(); i++) {
-                    JsonObject monitor = monitors.get(i).getAsJsonObject();
-                    int action = monitor.get("action").getAsInt();
-                    long actionTime = monitor.get("actionTime").getAsLong();
-                    int spamType = monitor.get("spamType").getAsInt();
-                    String spamDetail = monitor.get("spamDetail").getAsString();
+            JsonArray asrs = result.get("asr").getAsJsonArray();
+            if (asrs != null && asrs.size() > 0) {
+                for (int i = 0; i < asrs.size(); i++) {
+                    JsonObject asr = asrs.get(i).getAsJsonObject();
+                    String taskId = asr.get("taskId").getAsString();
+                    String content = asr.get("content").getAsString();
+                    long startTime = asr.get("startTime").getAsLong();
+                    long endTime = asr.get("endTime").getAsLong();
+                    System.out.printf(String.format("语音识别检测结果：taskId=%s, content=%s, startTime=%s, endTime=%s",
+                            taskId, content, startTime, endTime));
                 }
-                System.out.printf("直播人审结果：%s%n", result.get("monitors").getAsJsonArray().toString());
-            } else if (status == 20) {
-                System.out.println("数据过期");
-            } else if (status == 30) {
-                System.out.println("数据不存在");
+            } else {
+                System.out.printf("无语音识别检测结果");
             }
         } else {
             System.out.printf("ERROR: code=%s, msg=%s%n", code, msg);
         }
     }
-
 }

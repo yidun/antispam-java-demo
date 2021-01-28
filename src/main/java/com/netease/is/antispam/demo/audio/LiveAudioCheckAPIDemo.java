@@ -40,7 +40,7 @@ public class LiveAudioCheckAPIDemo {
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
-    private final static String API_URL = "http://as-liveaudio.dun.163.com/v2/liveaudio/check";
+    private final static String API_URL = "http://as.dun.163.com/v3/liveaudio/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -57,7 +57,7 @@ public class LiveAudioCheckAPIDemo {
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
         // 直播语音版本v2.1及以上二级细分类结构进行调整
-        params.put("version", "v2.1");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
