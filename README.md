@@ -37,6 +37,12 @@ http://dun.163.com
 ├── VideoCallbackAPIDemo.java 视频点播检测结果获取接口演示
 ├── VideoQueryByTaskIdsDemo.java 视频点播结果查询接口演示
 ├── VideoImageQueryDemo.java 视频点播截图查询接口演示
+├── MediaSolutionSubmitV2APIDemo.java 融媒体解决方案检测提交接口演示
+├── MediaSolutionCallbackV2APIDemo.java 融媒体解决方案获取结果-轮询模式接口演示
+├── MediaSolutionQueryV2APIDemo.java 融媒体解决方案回调查询接口演示
+├── ReportSolutionSubmitAPIDemo.java 举报解决方案检测提交接口演示
+├── ReportSolutionCallbackAPIDemo.java 举报方案获取结果-轮询模式接口演示
+├── ReportSolutionQueryAPIDemo.java 举报解决方案回调查询接口演示
 ├── FileSubmitApiDemo.java 文档解决方案在线检测提交接口演示
 ├── FileCallbackApiDemo.java 文档解决方案检测结果获取接口演示
 ├── CrawlerSubmitAPIDemo.java 网站检测解决方案在线检测提交接口演示

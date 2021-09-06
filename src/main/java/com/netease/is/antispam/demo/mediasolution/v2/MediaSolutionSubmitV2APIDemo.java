@@ -1,32 +1,31 @@
 /*
- * @(#) MediaSolutionSubmitAPIDemo.java 2020-06-23
+ * @(#) ReportSolutionSubmitAPIDemo.java 2021-09-03
  *
- * Copyright 2020 NetEase.com, Inc. All rights reserved.
+ * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.mediasolution;
+package com.netease.is.antispam.demo.mediasolution.v2;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.DemoConstants;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import com.netease.is.antispam.demo.utils.DemoConstants;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
-
 /**
- * 调用易盾反垃圾融媒体解决方案检测提交接口API示例
+ * 融媒体解决方案检测提交接口API示例-v2版本
  *
- * @author maxiaofeng
- * @version 2020-06-23
+ * @author spring404
+ * @version 2021-09-03
  */
-public class MediaSolutionSubmitAPIDemo {
+public class MediaSolutionSubmitV2APIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -37,9 +36,9 @@ public class MediaSolutionSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾直播音视频解决方案在线检测接口地址
+     * 易盾反垃圾举报解决方案在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/mediasolution/submit";
+    private final static String API_URL = "http://as.dun.163.com/v2/mediasolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -50,7 +49,7 @@ public class MediaSolutionSubmitAPIDemo {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1.1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
@@ -58,13 +57,13 @@ public class MediaSolutionSubmitAPIDemo {
 
         // 2.设置私有参数
         params.put("title", "融媒体解决方案的标题");
-        params.put("dataId", "1346");
         params.put("callback", "i am callback");
         JsonArray jsonArray = new JsonArray();
         // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
         JsonObject text = new JsonObject();
         text.addProperty("type", "text");
         text.addProperty("data", "融媒体文本段落");
+        text.addProperty("dataId", "0001");
         jsonArray.add(text);
         JsonObject image = new JsonObject();
         image.addProperty("type", "image");
@@ -74,10 +73,6 @@ public class MediaSolutionSubmitAPIDemo {
         audio.addProperty("type", "audio");
         audio.addProperty("data", "http://xxx.mp3");
         jsonArray.add(audio);
-        JsonObject video = new JsonObject();
-        video.addProperty("type", "video");
-        video.addProperty("data", "http://xxx.mp4");
-        jsonArray.add(video);
         JsonObject audiovideo = new JsonObject();
         audiovideo.addProperty("type", "audiovideo");
         audiovideo.addProperty("data", "http://xxx.mp4");

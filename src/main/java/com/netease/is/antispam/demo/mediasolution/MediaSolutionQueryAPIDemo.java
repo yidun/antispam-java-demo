@@ -1,33 +1,32 @@
 /*
- * @(#) MediaSolutionCallbackAPIDemo.java 2020-06-23
+ * @(#) MediaSolutionQueryAPIDemo.java 2021-09-03
  *
- * Copyright 2020 NetEase.com, Inc. All rights reserved.
+ * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
 
 package com.netease.is.antispam.demo.mediasolution;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import com.netease.is.antispam.demo.utils.DemoConstants;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
- * 调用易盾反垃圾云服务获取融媒体解决方案离线结果接口API示例
+ * 融媒体解决方案回调查询接口API示例
  *
- * @author maxiaofeng
- * @version 2020-06-23
+ * @author spring404
+ * @version 2021-09-03
  */
-public class MediaSolutionCallbackAPIDemo {
+public class MediaSolutionQueryAPIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -36,15 +35,15 @@ public class MediaSolutionCallbackAPIDemo {
     /**
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
-    private final static String SECRETKEY = "your_secret_key";
+    private final static String SECRETKEY = "your_secret_id";
     /**
      * 易盾反垃圾云服务点播音视频解决方案离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/mediasolution/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v1/mediasolution/callback/query";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000 * 60 * 5, 2000, 2000);
 
 
     public static void main(String[] args) {
@@ -57,10 +56,11 @@ public class MediaSolutionCallbackAPIDemo {
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
+
+        params.put("taskIds", "['ga4igad3v96421cazg0ws1sg05009pkb','6ml6l4l8a1ooay43572yzs9g05009pkb']");
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
-
         // 3.发送HTTP请求，这里使用的是HttpClient工具包，产品可自行选择自己熟悉的工具包发送请求
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
