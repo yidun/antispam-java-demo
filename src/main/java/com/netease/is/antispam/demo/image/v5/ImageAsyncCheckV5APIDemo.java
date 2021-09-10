@@ -3,7 +3,7 @@
  *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.image;
+package com.netease.is.antispam.demo.image.v5;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import com.netease.is.antispam.demo.utils.Utils;
  * @author yd-dev
  * @version 2020-10-15
  */
-public class ImageAsyncCheckAPIDemo {
+public class ImageAsyncCheckV5APIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -39,7 +39,7 @@ public class ImageAsyncCheckAPIDemo {
     /**
      * 易盾反垃圾云服务图片离线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v4/image/asyncCheck";
+    private final static String API_URL = "http://as.dun.163.com/v5/image/asyncCheck";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -51,7 +51,7 @@ public class ImageAsyncCheckAPIDemo {
      */
     public static void main(String[] args) throws Exception {
         // 1.设置公共参数
-        Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v4", "MD5");
+        Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v5", "MD5");
 
         // 2.设置私有参数
         JsonArray jsonArray = new JsonArray();
