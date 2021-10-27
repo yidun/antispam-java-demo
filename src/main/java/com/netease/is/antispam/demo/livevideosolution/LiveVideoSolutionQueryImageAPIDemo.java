@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 
 /**
@@ -26,28 +27,33 @@ import java.util.Map;
  */
 public class LiveVideoSolutionQueryImageAPIDemo {
 
-    /** 产品密钥ID，产品标识 */
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 易盾反垃圾云服务直播音视频解决方案在线提交接口地址 */
+    /**
+     * 易盾反垃圾云服务直播音视频解决方案在线提交接口地址
+     */
     private final static String API_URL = "http://as.dun.163yun.com/v1/livewallsolution/query/image";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 2000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         // 1.设置公共参数
-        Map<String, String> params = Utils.getCommonParams(SECRETID, "v1.0", "MD5");
+        Map<String, String> params = Utils.getCommonParams(SECRETID, "v1", "MD5");
 
         // 2.设置私有参数
-        params.put("taskId", "c633a8cb6d45497c9f4e7bd6d8218443");
-        params.put("levels", "[1,2]");
-        params.put("callbackStatus", "1");
+        params.put("taskId", "95b9496929a647d3be6bee74db639eab");
         params.put("pageNum", "1");
         params.put("pageSize", "10");
 
@@ -70,11 +76,13 @@ public class LiveVideoSolutionQueryImageAPIDemo {
             if (status == 0) {
                 for (JsonElement rowElement : rows) {
                     JsonObject row = rowElement.getAsJsonObject();
-                    String url = row.get("url").getAsString();
-                    int label = row.get("label").getAsInt();
-                    int labelLevel = row.get("labelLevel").getAsInt();
-                    long beginTime = row.get("beginTime").getAsLong();
-                    long endTime = row.get("endTime").getAsLong();
+                    String url = Utils.getStringProperty(row, "url");
+                    Integer label = Utils.getIntegerProperty(row, "label");
+                    Integer labelLevel = Utils.getIntegerProperty(row, "labelLevel");
+                    Long beginTime = Utils.getLongProperty(row, "beginTime");
+                    Long endTime = Utils.getLongProperty(row, "endTime");
+                    System.out.printf("url=%s, label=%s, labelLevel=%s, [beginTime=%s -- endTime=%s], ",
+                            url, label, labelLevel, beginTime, endTime);
                 }
                 System.out.println(String.format("live data query success, images: %s", rows));
             } else if (status == 20) {

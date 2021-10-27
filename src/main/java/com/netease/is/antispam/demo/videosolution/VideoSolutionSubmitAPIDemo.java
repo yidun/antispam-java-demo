@@ -13,6 +13,7 @@ import java.util.Random;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
@@ -36,14 +37,13 @@ public class VideoSolutionSubmitAPIDemo {
     /**
      * 易盾反垃圾点播音视频解决方案在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/videosolution/submit";
+    private final static String API_URL = "http://as.dun.163.com/v2/videosolution/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -52,20 +52,20 @@ public class VideoSolutionSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         // 点播音视频解决方案版本v1.1及以上语音二级细分类subLabels结构进行调整
-        params.put("version", "v1.1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
         params.put("url", "http://xxx.xx");
-        // JsonArray jsonArray = new JsonArray();
+        JsonArray jsonArray = new JsonArray();
         // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
-        // JsonObject image1 = new JsonObject();
-        // image1.addProperty("name", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
-        // image1.addProperty("type", 1);
-        // image1.addProperty("data", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
-        // jsonArray.add(image1);
+        JsonObject image1 = new JsonObject();
+        image1.addProperty("name", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        image1.addProperty("type", 1);
+        image1.addProperty("data", "http://p1.music.126.net/lEQvXzoC17AFKa6yrf-ldA==/1412872446212751.jpg");
+        jsonArray.add(image1);
         // 传图片base64编码进行检测，name结构产品自行设计，用于唯一定位该图片数据
         // JsonObject image2 = new JsonObject();
         // image2.addProperty("name", "{\"imageId\": 33451123, \"contentId\": 78978}");
@@ -88,8 +88,10 @@ public class VideoSolutionSubmitAPIDemo {
         if (code == 200) {
             JsonObject result = jObject.get("result").getAsJsonObject();
             String taskId = result.get("taskId").getAsString();
-            String dataId = result.get("dataId").getAsString();
-            System.out.println(String.format("SUBMIT SUCCESS: taskId=%s, dataId=%s", taskId, dataId));
+            String dataId = result.has("dataId") ? result.get("dataId").getAsString() : "无";
+            long dealingCount = result.get("dealingCount").getAsLong();
+            System.out.println(String.format("SUBMIT SUCCESS: taskId=%s, dataId=%s, dealingCount=%s", taskId, dataId,
+                    dealingCount));
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }

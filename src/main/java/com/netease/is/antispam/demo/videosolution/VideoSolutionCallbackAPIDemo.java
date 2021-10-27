@@ -38,7 +38,7 @@ public class VideoSolutionCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务点播音视频解决方案离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/videosolution/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v2/videosolution/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -53,7 +53,7 @@ public class VideoSolutionCallbackAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         // 点播音视频解决方案版本v1.1及以上语音二级细分类subLabels结构进行调整
-        params.put("version", "v1.1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
@@ -64,7 +64,7 @@ public class VideoSolutionCallbackAPIDemo {
 
         // 3.发送HTTP请求，这里使用的是HttpClient工具包，产品可自行选择自己熟悉的工具包发送请求
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
-
+        System.out.println(response);
         // 4.解析接口返回值
         JsonObject resultObject = new JsonParser().parse(response).getAsJsonObject();
         int code = resultObject.get("code").getAsInt();
@@ -77,8 +77,19 @@ public class VideoSolutionCallbackAPIDemo {
                 for (JsonElement jsonElement : resultArray) {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
+                    String dataId = jObject.get("dataId").getAsString();
+                    String callback = jObject.get("callback").getAsString();
                     int result = jObject.get("result").getAsInt();
-                    System.out.println(String.format("taskId:%s, result:%s", taskId, result));
+                    int censorSource = jObject.get("censorSource").getAsInt();
+                    int checkStatus = jObject.get("checkStatus").getAsInt();
+                    long checkTime = jObject.get("checkTime").getAsLong();
+                    long duration = jObject.get("duration").getAsLong();
+                    long receiveTime = jObject.get("receiveTime").getAsLong();
+                    long censorTime = jObject.get("censorTime").getAsLong();
+                    System.out.println(String.format(
+                            "taskId:%s, dataId:%s, callback:%s, result:%s, censorSource:%s, checkStatus:%s, checkTime:%s, duration:%s, receiveTime:%s, censorTime:%s",
+                            taskId, dataId, callback, result, censorSource, checkStatus, checkTime, duration,
+                            receiveTime, censorTime));
                     if (jObject.has("evidences")) {
                         JsonObject evidences = jObject.get("evidences").getAsJsonObject();
                         if (evidences.has("audio")) {
@@ -113,6 +124,10 @@ public class VideoSolutionCallbackAPIDemo {
                                 }
                             }
                         }
+                    }
+                    if (jObject.has("reviewEvidences")) {
+                        String reviewEvidences = jObject.get("reviewEvidences").getAsString();
+                        System.out.println(String.format("人审证据信息 %s", reviewEvidences));
                     }
                 }
             }

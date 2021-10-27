@@ -6,15 +6,16 @@
 
 package com.netease.is.antispam.demo.audio;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 /**
  * 调用易盾反垃圾云服务查询直播语音增值检测结果接口
@@ -64,6 +65,7 @@ public class LiveAudioQueryExtraAPIDemo {
         if (code == 200) {
             JsonObject result = resultObject.getAsJsonObject("result");
             JsonArray asrs = result.get("asr").getAsJsonArray();
+            JsonArray languages = result.get("language").getAsJsonArray();
             if (asrs != null && asrs.size() > 0) {
                 for (int i = 0; i < asrs.size(); i++) {
                     JsonObject asr = asrs.get(i).getAsJsonObject();
@@ -71,11 +73,25 @@ public class LiveAudioQueryExtraAPIDemo {
                     String content = asr.get("content").getAsString();
                     long startTime = asr.get("startTime").getAsLong();
                     long endTime = asr.get("endTime").getAsLong();
-                    System.out.printf(String.format("语音识别检测结果：taskId=%s, content=%s, startTime=%s, endTime=%s",
-                            taskId, content, startTime, endTime));
+                    String speakerId = asr.get("speakerId").getAsString();
+                    System.out.println(
+                            String.format("语音识别检测结果：taskId=%s, speakerId=%s content=%s, startTime=%s, endTime=%s",
+                                    taskId, speakerId, content, startTime, endTime));
                 }
-            } else {
-                System.out.printf("无语音识别检测结果");
+            }
+            if (languages != null && languages.size() > 0) {
+                for (int i = 0; i < languages.size(); i++) {
+                    JsonObject language = asrs.get(i).getAsJsonObject();
+                    String taskId = language.get("taskId").getAsString();
+                    String content = language.get("content").getAsString();
+                    String callback = language.get("callback").getAsString();
+                    String segmentId = language.get("segmentId").getAsString();
+                    long startTime = language.get("startTime").getAsLong();
+                    long endTime = language.get("endTime").getAsLong();
+                    System.out.println(String.format(
+                            "语种检测结果：taskId=%s, content=%s, callback=%s, segmentId=%s, startTime=%s, endTime=%s",
+                            taskId, content, callback, segmentId, startTime, endTime));
+                }
             }
         } else {
             System.out.printf("ERROR: code=%s, msg=%s%n", code, msg);

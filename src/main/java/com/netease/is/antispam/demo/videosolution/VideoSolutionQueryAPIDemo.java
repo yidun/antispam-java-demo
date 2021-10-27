@@ -6,20 +6,12 @@
 
 package com.netease.is.antispam.demo.videosolution;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
@@ -61,8 +53,8 @@ public class VideoSolutionQueryAPIDemo {
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         Set<String> taskIds = new HashSet<String>();
-        taskIds.add("202b1d65f5854cecadcb24382b681c1a");
-        taskIds.add("0f0345933b05489c9b60635b0c8cc721");
+        taskIds.add("aa2f542eb7854d78a1906021aab2890d");
+        taskIds.add("3718c32ab21b4ed78a29e2e9a44bb7cb");
         params.put("taskIds", new Gson().toJson(taskIds));
 
         // 2.生成签名信息

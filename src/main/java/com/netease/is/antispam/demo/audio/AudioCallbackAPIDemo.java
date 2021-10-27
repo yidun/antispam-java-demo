@@ -7,7 +7,7 @@ package com.netease.is.antispam.demo.audio;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
@@ -42,7 +42,7 @@ public class AudioCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务音频离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v3/audio/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v4/audio/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -58,10 +58,11 @@ public class AudioCallbackAPIDemo {
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
         // 点播语音版本v3.2及以上二级细分类结构进行调整
-        params.put("version", "v3.3");
+        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
-        params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        params.put("nonce", UUID.randomUUID().toString().replace("-", ""));
+        // 加密方式可选 MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -71,64 +72,185 @@ public class AudioCallbackAPIDemo {
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
         // 4.解析接口返回值
-        JsonObject resultObject = new JsonParser().parse(response).getAsJsonObject();
-        int code = resultObject.get("code").getAsInt();
-        String msg = resultObject.get("msg").getAsString();
+        JsonObject respObject = new JsonParser().parse(response).getAsJsonObject();
+        int code = respObject.get("code").getAsInt();
+        String msg = respObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("antispam");
-            if (resultArray.size() == 0) {
+            JsonArray result = respObject.getAsJsonArray("result");
+            if (null == result || result.size() == 0) {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
-                for (JsonElement jsonElement : resultArray) {
-                    JsonObject jObject = jsonElement.getAsJsonObject();
-                    String taskId = jObject.get("taskId").getAsString();
-                    int asrStatus = jObject.get("asrStatus").getAsInt();
-                    if (asrStatus == 4) {
-                        int asrResult = jObject.get("asrResult").getAsInt();
-                        System.out.println(String.format("检测失败: taskId=%s, asrResult=%s", taskId, asrResult));
-                    } else {
-                        int action = jObject.get("action").getAsInt();
-                        JsonArray labelArray = jObject.getAsJsonArray("labels");
-                        if (action == 0) {
-                            System.out.println(String.format("taskId=%s，结果：通过", taskId));
-                        } else if (action == 1 || action == 2) {
-                            for (JsonElement labelElement : labelArray) {
-                                JsonObject lObject = labelElement.getAsJsonObject();
-                                int label = lObject.get("label").getAsInt();
-                                int level = lObject.get("level").getAsInt();
-                                // 注意二级细分类结构
-                                JsonArray subLabels = lObject.get("subLabels").getAsJsonArray();
-                                if (subLabels != null && subLabels.size() > 0) {
-                                    for (int i = 0; i < subLabels.size(); i++) {
-                                        JsonObject subLabelObj = subLabels.get(i).getAsJsonObject();
-                                        String subLabel = subLabelObj.get("subLabel").getAsString();
-                                        JsonObject details = subLabelObj.getAsJsonObject("details");
-                                        JsonArray hintArray = details.getAsJsonArray("hint");
-                                    }
-                                }
-                            }
-                            System.out.println(String.format("taskId=%s，结果：%s，证据信息如下：%s", taskId,
-                                    action == 1 ? "不确定" : "不通过", labelArray.toString()));
-                        }
-                        JsonArray segments = jObject.getAsJsonArray("segments");
-                        if (segments != null && segments.size() > 0) {
-                            for (JsonElement segmentJson : segments) {
-                                JsonObject segment = segmentJson.getAsJsonObject();
-                                int startTime = segment.get("startTime").getAsInt();
-                                int endTime = segment.get("endTime").getAsInt();
-                                String content = segment.get("content").getAsString();
-                                int label = segment.get("label").getAsInt();
-                                int level = segment.get("level").getAsInt();
-                                System.out
-                                        .println(String.format("taskId=%s，开始时间：%s秒，结束时间：%s秒，内容：%s， label:%s, level:%s",
-                                                taskId, startTime, endTime, content, label, level));
-                            }
-                        }
+                System.out.println(result.toString());
+                for (JsonElement ele : result) {
+                    JsonObject resultObj = ele.getAsJsonObject();
+                    if (resultObj.has("antispam")) {
+                        getAntispam(resultObj.get("antispam").getAsJsonObject());
+                    }
+                    if (resultObj.has("language")) {
+                        getLanguage(resultObj.get("language").getAsJsonObject());
+
+                    }
+                    if (resultObj.has("asr")) {
+                        getAsr(resultObj.get("asr").getAsJsonObject());
+                    }
+                    if (resultObj.has("voice")) {
+                        getVoice(resultObj.get("voice").getAsJsonObject());
                     }
                 }
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
+    }
+
+    private static void getVoice(JsonObject voice) {
+        if (voice == null) {
+            return;
+        }
+        String taskId = voice.get("taskId").getAsString();
+        String dataId = voice.has("dataId") ? voice.get("dataId").getAsString() : "无";
+        String callback = voice.has("callback") ? voice.get("callback").getAsString() : "无";
+        JsonObject details = voice.get("details").getAsJsonObject();
+        String mainGender = details.get("mainGender").getAsString();
+        System.out.println(String.format("人声检测属性结果：taskId %s, dataId %s, callback %s, 人声属性：%s", taskId, dataId,
+                callback, mainGender));
+    }
+
+    private static void getAsr(JsonObject asr) {
+        if (asr == null) {
+            return;
+        }
+        String taskId = asr.get("taskId").getAsString();
+        String dataId = asr.has("dataId") ? asr.get("dataId").getAsString() : "无";
+        String callback = asr.has("callback") ? asr.get("callback").getAsString() : "无";
+        JsonArray details = asr.get("details").getAsJsonArray();
+        System.out.println(
+                String.format("语音识别检测结果：taskId %s, dataId %s, callback %s, 语音识别详情如下: ", taskId, dataId, callback));
+        for (JsonElement detailEle : details) {
+            JsonObject detail = detailEle.getAsJsonObject();
+            long startTime = detail.get("startTime").getAsLong();
+            long endTime = detail.get("endTime").getAsLong();
+            String content = detail.get("content").getAsString();
+            System.out.println(String.format("开始时间 %s秒，结束时间 %s秒，语音内容 \"%s\" ", startTime, endTime, content));
+        }
+    }
+
+    private static void getLanguage(JsonObject language) {
+        if (language == null) {
+            return;
+        }
+        String taskId = language.get("taskId").getAsString();
+        String dataId = language.has("dataId") ? language.get("dataId").getAsString() : "无";
+        String callback = language.has("callback") ? language.get("callback").getAsString() : "无";
+        JsonArray details = language.get("details").getAsJsonArray();
+        System.out.println(
+                String.format("语种检测结果：taskId %s, dataId %s, callback %s, 语种检测详情如下: ", taskId, dataId, callback));
+        for (JsonElement detailEle : details) {
+            JsonObject detail = detailEle.getAsJsonObject();
+            String type = detail.get("type").getAsString();
+            JsonArray segments = detail.get("segments").getAsJsonArray();
+            System.out.println(String.format("语种类型 %s， 音频断句时间 %s", type, segments));
+        }
+
+    }
+
+    private static void getAntispam(JsonObject antispam) {
+        if (antispam == null) {
+            return;
+        }
+        String taskId = antispam.get("taskId").getAsString();
+        int status = antispam.get("status").getAsInt();
+        // 检测失败
+        if (status == 3) {
+            int failureReason = antispam.get("failureReason").getAsInt();
+            String reason = getFailureReason(failureReason);
+            System.out.println(String.format("内容安全检测结果：taskId = %s，检测失败，失败原因：\"%s\"", taskId, reason));
+        }
+        // 检测成功
+        if (status == 2) {
+            System.out.println("----------------------------------------------------------");
+            System.out.println(String.format("内容安全检测结果：taskId = %s，检测成功", taskId));
+            // 详细字段意义可前往官网查看
+            int suggestion = antispam.get("suggestion").getAsInt();
+            int censorSource = antispam.get("censorSource").getAsInt();
+            int resultType = antispam.get("resultType").getAsInt();
+            Long censorTime = antispam.has("censorTime") ? antispam.get("censorTime").getAsLong() : null;
+            String censorLabels = antispam.has("censorLabels") ? antispam.get("censorLabels").getAsString() : "无";
+            String dataId = antispam.has("dataId") ? antispam.get("dataId").getAsString() : "无";
+            String callback = antispam.has("callback") ? antispam.get("callback").getAsString() : "无";
+            System.out.println(String.format(
+                    "建议结果 %s， 结果类型 %s， 审核来源 %s，审核完成时间 %s，提交时传递的dataId %s， 提交时传递的callback %s， 自定义标签分类信息 %s",
+                    suggestion, resultType, censorSource, censorTime, dataId, callback, censorLabels));
+            System.out.println("音频数据断句详细信息：");
+            if (antispam.has("segments")) {
+                JsonArray segments = antispam.get("segments").getAsJsonArray();
+                for (JsonElement segmentEle : segments) {
+                    JsonObject segment = segmentEle.getAsJsonObject();
+                    long statTime = segment.get("startTime").getAsLong();
+                    long endTime = segment.get("endTime").getAsLong();
+                    int type = segment.get("type").getAsInt();
+                    String content = segment.get("content").getAsString();
+                    System.out
+                            .println(String.format("音频断句开始时间：%s秒，结束时间：%s秒，内容：\"%s\"，类型 %s", statTime, endTime, content,
+                                    type == 0 ? "语音识别" : "声纹检测"));
+                    JsonArray labels = segment.get("labels").getAsJsonArray();
+                    for (JsonElement labelEle : labels) {
+                        JsonObject labelObj = labelEle.getAsJsonObject();
+                        int label = labelObj.get("label").getAsInt();
+                        int level = labelObj.get("level").getAsInt();
+                        System.out.println(String.format("分类信息 %s， 分类级别 %s", label, level));
+                        JsonElement subLabelsEle = labelObj.get("subLabels");
+                        if (subLabelsEle.isJsonArray()) {
+                            System.out.println("细分类信息：");
+                            for (JsonElement subLabelEle : subLabelsEle.getAsJsonArray()) {
+                                JsonObject subLabelObj = subLabelEle.getAsJsonObject();
+                                String subLabel = subLabelObj.get("subLabel").getAsString();
+                                JsonObject details = subLabelObj.get("details").getAsJsonObject();
+                                System.out.println(String.format("细分类类别 %s ，其他信息: %s ", subLabel, details));
+                                String hitInfo = details.has("hitInfo") ? details.get("hitInfo").getAsString() : "";
+                                JsonArray keywords = details.has("keywords") ? details.get("keywords").getAsJsonArray()
+                                        : null;
+                                if (keywords != null && keywords.size() > 0) {
+                                    for (JsonElement keywordEle : keywords) {
+                                        String keyword = keywordEle.getAsString();
+                                    }
+                                }
+                                JsonArray libInfos = details.has("libInfos") ? details.get("libInfos").getAsJsonArray()
+                                        : null;
+                                if (libInfos != null && libInfos.size() > 0) {
+                                    for (JsonElement libInfoEle : libInfos) {
+                                        JsonObject libInfo = libInfoEle.getAsJsonObject();
+                                        int listType = libInfo.get("listType").getAsInt();
+                                        String entity = libInfo.get("entity").getAsString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println("----------------------------------------------------------");
+        }
+    }
+
+    private static String getFailureReason(int failureReason) {
+        String reason;
+        switch (failureReason) {
+            case 1:
+                reason = "文件格式错误";
+                break;
+            case 2:
+                reason = "文件下载失败";
+                break;
+            case 3:
+                reason = "解析失败";
+                break;
+            case 4:
+                reason = "音频流不存在";
+                break;
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + failureReason);
+        }
+        return reason;
     }
 }

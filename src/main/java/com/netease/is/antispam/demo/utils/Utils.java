@@ -6,11 +6,13 @@
 
 package com.netease.is.antispam.demo.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author yd-dev
@@ -49,4 +51,15 @@ public class Utils {
         params.put(SIGNATURE, signature);
     }
 
+    public static String getStringProperty(JsonObject obj, String memberName) {
+        return obj.has(memberName) ? obj.get(memberName).getAsString() : "无";
+    }
+
+    public static Integer getIntegerProperty(JsonObject obj, String memberName) {
+        return obj.has(memberName) ? obj.get(memberName).getAsInt() : null;
+    }
+
+    public static Long getLongProperty(JsonObject obj, String memberName) {
+        return obj.has(memberName) ? obj.get(memberName).getAsLong() : null;
+    }
 }

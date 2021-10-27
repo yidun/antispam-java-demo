@@ -6,22 +6,15 @@
 
 package com.netease.is.antispam.demo.audio;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务查询点播语音结果接口API示例
@@ -52,7 +45,6 @@ public class AudioQueryByTaskIdsDemo {
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -102,8 +94,8 @@ public class AudioQueryByTaskIdsDemo {
                         } else if (action == 2) {
                             for (JsonElement labelInfo : labelArray) {
                                 JsonObject lObject = labelInfo.getAsJsonObject();
-                                int label = lObject.get("label").getAsInt();
-                                int level = lObject.get("level").getAsInt();
+                                Integer label = Utils.getIntegerProperty(lObject, "label");
+                                Integer level = Utils.getIntegerProperty(lObject, "level");
                                 JsonObject details = lObject.get("details").getAsJsonObject();
                                 JsonArray hintArr = details.getAsJsonArray("hint");
                                 // 二级细分类

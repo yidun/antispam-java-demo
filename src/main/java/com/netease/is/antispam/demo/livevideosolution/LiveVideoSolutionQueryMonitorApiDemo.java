@@ -6,15 +6,16 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 /**
  * 调用易盾反垃圾云服务查询直播音视频人审操作记录接口API示例
@@ -45,7 +46,7 @@ public class LiveVideoSolutionQueryMonitorApiDemo {
         // 1. 设置公共参数
         Map<String, String> params = Utils.getCommonParams(SECRETID, "v1.0", "MD5");
         // 2. 设置私有参数
-        params.put("taskId", "26b3f1b1e1a4460c9012ee45857d8349");
+        params.put("taskId", "95b9496929a647d3be6bee74db639eab");
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 

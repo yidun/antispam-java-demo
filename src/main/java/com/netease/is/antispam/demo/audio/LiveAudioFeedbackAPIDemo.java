@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.audio;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 /**
  * 调用易盾反垃圾云服务更新直播音频信息接口API示例
@@ -50,13 +51,13 @@ public class LiveAudioFeedbackAPIDemo {
         Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v1.0", "MD5");
 
         // 2.设置私有参数
-        JsonObject feedback = new JsonObject();
-        feedback.addProperty("taskId", "${validTaskId}");
-        feedback.addProperty("status", 100);
+        JsonObject realTimeInfoLis = new JsonObject();
+        realTimeInfoLis.addProperty("taskId", "${validTaskId}");
+        realTimeInfoLis.addProperty("status", 100);
 
         JsonArray feedbackArray = new JsonArray();
-        feedbackArray.add(feedback);
-        params.put("feedbacks", new Gson().toJson(feedbackArray));
+        feedbackArray.add(realTimeInfoLis);
+        params.put("realTimeInfoLis", new Gson().toJson(feedbackArray));
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);
@@ -83,7 +84,7 @@ public class LiveAudioFeedbackAPIDemo {
                 }
             }
         } else {
-            System.out.printf("ERROR: code=%s, msg=%s", code, msg);
+            System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }
     }
 

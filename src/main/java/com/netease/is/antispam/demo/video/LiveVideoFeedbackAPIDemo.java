@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.video;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 /**
  * 调用易盾反垃圾云服务更新直播视频信息接口API示例
@@ -51,7 +52,7 @@ public class LiveVideoFeedbackAPIDemo {
 
         // 2.设置私有参数
         JsonObject realTimeInfo = new JsonObject();
-        realTimeInfo.addProperty("taskId", "****");
+        realTimeInfo.addProperty("taskId", "b656c1d851da43d3aff32b71108b1917");
         realTimeInfo.addProperty("status", 100);
 
         JsonArray realTimeInfoArray = new JsonArray();
