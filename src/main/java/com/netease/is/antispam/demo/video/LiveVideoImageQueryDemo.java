@@ -1,17 +1,19 @@
 package com.netease.is.antispam.demo.video;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务直播视频截图查询接口API示例，该示例依赖以下jar包：
@@ -23,19 +25,28 @@ import java.util.Random;
  * @version 2020-07-16 17:41
  */
 public class LiveVideoImageQueryDemo {
-    /** 产品密钥ID，产品标识 */
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 业务ID，易盾根据产品业务特点分配 */
+    /**
+     * 业务ID，易盾根据产品业务特点分配
+     */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务直播视频截图查询获取接口地址 */
+    /**
+     * 易盾反垃圾云服务直播视频截图查询获取接口地址
+     */
     private final static String API_URL = "http://as.dun.163.com/v1/livevideo/query/image";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -50,7 +61,7 @@ public class LiveVideoImageQueryDemo {
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
-        params.put("taskId", "87aa24884d614ae8b8cc4d472b37be51");
+        params.put("taskId", "1f606401a1ea4bb389566935fc8ebdf6");
         params.put("levels", "[0,1,2]");
         params.put("pageNum", "1");
         params.put("pageSize", "20");
@@ -77,10 +88,10 @@ public class LiveVideoImageQueryDemo {
                 JsonArray rows = images.getAsJsonArray("rows");
                 for (JsonElement row : rows) {
                     JsonObject rowObject = row.getAsJsonObject();
-                    String url = rowObject.get("url").getAsString();
-                    Integer label = rowObject.get("label").getAsInt();
-                    Integer labelLevel = rowObject.get("labelLevel").getAsInt();
-                    Integer callbackStatus = rowObject.get("callbackStatus").getAsInt();
+                    String url = Utils.getStringProperty(rowObject, "url");
+                    Integer label = Utils.getIntegerProperty(rowObject, "label");
+                    Integer labelLevel = Utils.getIntegerProperty(rowObject, "labelLevel");
+                    Integer callbackStatus = Utils.getIntegerProperty(rowObject, "callbackStatus");
                     Long beginTime = rowObject.get("beginTime").getAsLong();
                     Long endTime = rowObject.get("endTime").getAsLong();
                     System.out.println(

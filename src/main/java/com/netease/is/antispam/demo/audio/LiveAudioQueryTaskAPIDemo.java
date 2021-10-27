@@ -77,7 +77,7 @@ public class LiveAudioQueryTaskAPIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            JsonArray resultArray = resultObject.getAsJsonArray("result");
+            JsonArray resultArray = resultObject.get("result").getAsJsonArray();
             if (resultArray.size() == 0) {
                 System.out.println("没有结果");
             } else {
@@ -85,18 +85,22 @@ public class LiveAudioQueryTaskAPIDemo {
                     JsonObject jObject = jsonElement.getAsJsonObject();
                     String taskId = jObject.get("taskId").getAsString();
                     int action = jObject.get("action").getAsInt();
+                    int asrStatus = jObject.get("asrStatus").getAsInt();
+                    int asrResult = jObject.get("asrResult").getAsInt();
+                    String callback = jObject.has("callback") ? jObject.get("callback").getAsString() : "";
                     long startTime = jObject.get("startTime").getAsLong();
                     long endTime = jObject.get("endTime").getAsLong();
+                    int censorSource = jObject.get("censorSource").getAsInt();
+                    String speakerId = jObject.get("speakerId").getAsString();
+                    String segmentId = jObject.get("segmentId").getAsString();
                     JsonArray segmentArray = jObject.getAsJsonArray("segments");
+                    JsonArray recordsArray = jObject.getAsJsonArray("records");
                     if (action == 0) {
-                        System.out.println(String.format("taskId=%s，结果：通过，时间区间【%s-%s】，证据信息如下：%s", taskId, startTime,
-                                endTime, segmentArray.toString()));
+                        System.out.println(String.format(
+                                "taskId=%s，结果：通过，语音识别状态 %s，语音识别结果 %s，回调信息 %s，时间区间【%s-%s】，审核类型 %s，说话人id %s，断句id %s，证据信息如下：%s, 记录信息如下：%s",
+                                taskId, asrStatus, asrResult, callback, startTime, endTime, censorSource, speakerId,
+                                segmentId, segmentArray.toString(), recordsArray));
                     } else if (action == 1 || action == 2) {
-                        // for (JsonElement labelElement : segmentArray) {
-                        // JsonObject lObject = labelElement.getAsJsonObject();
-                        // int label = lObject.get("label").getAsInt();
-                        // int level = lObject.get("level").getAsInt();
-                        // }
                         System.out.println(String.format("taskId=%s，结果：%s，时间区间【%s-%s】，证据信息如下：%s", taskId,
                                 action == 1 ? "不确定" : "不通过", startTime, endTime, segmentArray.toString()));
                     }

@@ -1,41 +1,49 @@
 /*
  * @(#) TextCallbackAPIDemo.java 2016年12月28日
- * 
+ *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
 package com.netease.is.antispam.demo.video;
 
-import com.google.gson.*;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
+import java.util.*;
+
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import java.util.*;
+import com.google.gson.*;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务点播视频结果查询接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务点播视频结果查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
- * 
+ *
  * @author hzhumin1
  * @version 2017年5月27日
  */
 public class VideoQueryByTaskIdsDemo {
-    /** 产品密钥ID，产品标识 */
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 业务ID，易盾根据产品业务特点分配 */
+    /**
+     * 业务ID，易盾根据产品业务特点分配
+     */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务点播查询检测结果获取接口地址 */
+    /**
+     * 易盾反垃圾云服务点播查询检测结果获取接口地址
+     */
     private final static String API_URL = "http://as.dun.163.com/v1/video/query/task";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -51,8 +59,8 @@ public class VideoQueryByTaskIdsDemo {
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
-        taskIds.add("c679d93d4a8d411cbe3454214d4b1fd7");
-        taskIds.add("49800dc7877f4b2a9d2e1dec92b988b6");
+        taskIds.add("1b826d7e408d4b7fa7d3ddc9062f7994");
+        taskIds.add("e7043c55c4d84948a14d9e89dc900ddf");
         params.put("taskIds", new Gson().toJson(taskIds));
 
         // 3.生成签名信息
@@ -71,12 +79,12 @@ public class VideoQueryByTaskIdsDemo {
             for (JsonElement jsonElement : resultArray) {
                 JsonObject jObject = jsonElement.getAsJsonObject();
                 int status = jObject.get("status").getAsInt();
-                if(status!=0){//-1:提交检测失败，0:正常，10：检测中，20：不是7天内数据，30：taskId不存在，110：请求重复，120：参数错误，130：解析错误，140：数据类型错误
-                    System.out.println("获取结果异常，status="+status);
+                if (status != 0) {// -1:提交检测失败，0:正常，10：检测中，20：不是7天内数据，30：taskId不存在，110：请求重复，120：参数错误，130：解析错误，140：数据类型错误
+                    System.out.println("获取结果异常，status=" + status);
                     continue;
                 }
                 String taskId = jObject.get("taskId").getAsString();
-                String callback = jObject.get("callback").getAsString();
+                String callback = jObject.has("callback") ? jObject.get("callback").getAsString() : "无";
                 int videoLevel = jObject.get("level").getAsInt();
                 if (videoLevel == 0) {
                     System.out.println(String.format("正常, callback=%s", callback));

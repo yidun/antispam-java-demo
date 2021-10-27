@@ -1,6 +1,6 @@
 /*
  * @(#) LiveVideoCallbackAPIDemo.java 2016年8月1日
- * 
+ *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
 package com.netease.is.antispam.demo.video;
@@ -20,28 +20,35 @@ import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 
 /**
- * 调用易盾反垃圾云服务直播电视墙离线结果获取接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2.commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
- * 
+ * 调用易盾反垃圾云服务直播电视墙离线结果获取接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求
+ * 2.commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java 3. gson，用于做json解析
+ *
  * @author yd-dev
  * @version 2020-04-22
  */
 public class LiveWallCallbackAPIDemo {
-    /** 产品密钥ID，产品标识 */
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 业务ID，易盾根据产品业务特点分配 */
+    /**
+     * 业务ID，易盾根据产品业务特点分配
+     */
     private final static String BUSINESSID = "your_business_id";
-    /** 易盾反垃圾云服务直播离线结果获取接口地址 */
+    /**
+     * 易盾反垃圾云服务直播离线结果获取接口地址
+     */
     private final static String API_URL = "http://as.dun.163.com/v3/livewall/callback/results";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 1000, 1000);
 
     /**
-     * 
      * @param args
      * @throws Exception
      */
@@ -81,7 +88,15 @@ public class LiveWallCallbackAPIDemo {
                     String callback = jObject.get("callback").getAsString();
                     // 状态
                     int status = jObject.get("status").getAsInt();
-                    System.out.println(String.format("taskId:%s, dataId:%s, callback:%s, status:%s", taskId, dataId, callback, status));
+                    int censorSource = jObject.get("censorSource").getAsInt();
+                    int callbackStatus = jObject.get("callbackStatus").getAsInt();
+                    int riskLevel = jObject.get("riskLevel").getAsInt();
+                    int riskScore = jObject.get("riskScore").getAsInt();
+                    long duration = jObject.get("duration").getAsLong();
+                    System.out.println(String.format(
+                            "taskId:%s, dataId:%s, 回调信息:%s, 状态:%s, 审核来源=%s, 回调状态%s, 风险等级%s, 风险评分%s, 时长 %s s",
+                            taskId, dataId, callback, status, censorSource, callbackStatus, riskLevel, riskScore,
+                            duration));
                     if (jObject.has("evidences")) {
                         parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
                     } else if (jObject.has("reviewEvidences")) {

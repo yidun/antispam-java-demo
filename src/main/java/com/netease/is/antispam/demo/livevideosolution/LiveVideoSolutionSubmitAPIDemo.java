@@ -37,14 +37,13 @@ public class LiveVideoSolutionSubmitAPIDemo {
     /**
      * 易盾反垃圾直播音视频解决方案在线检测接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v2/livewallsolution/submit";
+    private final static String API_URL = "http://as.dun.163.com/v3/livewallsolution/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -53,7 +52,7 @@ public class LiveVideoSolutionSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         // 直播音视频解决方案版本v2.1及以上语音二级细分类结构进行调整
-        params.put("version", "v2.1");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256

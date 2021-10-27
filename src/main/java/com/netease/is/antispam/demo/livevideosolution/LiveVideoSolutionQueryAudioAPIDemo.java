@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 
 /**
@@ -26,17 +27,24 @@ import java.util.Map;
  */
 public class LiveVideoSolutionQueryAudioAPIDemo {
 
-    /** 产品密钥ID，产品标识 */
+    /**
+     * 产品密钥ID，产品标识
+     */
     private final static String SECRETID = "your_secret_id";
-    /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
+    /**
+     * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
+     */
     private final static String SECRETKEY = "your_secret_key";
-    /** 易盾反垃圾云服务直播音视频解决方案在线提交接口地址 */
+    /**
+     * 易盾反垃圾云服务直播音视频解决方案在线提交接口地址
+     */
     private final static String API_URL = "http://as.dun.163yun.com/v1/livewallsolution/query/audio/task";
-    /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
+    /**
+     * 实例化HttpClient，发送http请求使用，可根据需要自行调参
+     */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 2000, 2000, 2000);
 
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -45,9 +53,9 @@ public class LiveVideoSolutionQueryAudioAPIDemo {
         Map<String, String> params = Utils.getCommonParams(SECRETID, "v1.0", "MD5");
 
         // 2.设置私有参数
-        params.put("taskId", "xxxx");
-        params.put("startTime", "1578326400000");
-        params.put("endTime", "1578327000000");// 最长支持查10分钟跨度
+        params.put("taskId", "292604e0200b4551b411c2d53adde893");
+        params.put("startTime", String.valueOf(System.currentTimeMillis() - 10 * 60 * 1000));
+        params.put("endTime", String.valueOf(System.currentTimeMillis()));// 最长支持查10分钟跨度
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);

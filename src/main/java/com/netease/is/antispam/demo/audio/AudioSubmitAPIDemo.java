@@ -40,7 +40,7 @@ public class AudioSubmitAPIDemo {
     /**
      * 易盾反垃圾云服务音频信息提交接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v3/audio/submit";
+    private final static String API_URL = "http://as.dun.163.com/v4/audio/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,14 +52,20 @@ public class AudioSubmitAPIDemo {
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
         // 点播语音版本v3.2及以上二级细分类结构进行调整
-        params.put("version", "v3.3");
+        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
         params.put("url", "http://xxx.xx");
-
+        // 其他业务参数 非必填项
+        params.put("title", "title");
+        params.put("ip", "ip");
+        params.put("account", "account");
+        params.put("deviceId", "deviceId");
+        params.put("extension", "extension");
+        params.put("deviceType", String.valueOf(11));
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
@@ -75,10 +81,12 @@ public class AudioSubmitAPIDemo {
         if (code == 200) {
             String taskId = result.get("taskId").getAsString();
             int status = result.get("status").getAsInt();
+            int dealingCount = result.get("dealingCount").getAsInt();
             if (status == 0) {
-                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
+                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s, dealingCount = %s", taskId, dealingCount));
             } else {
-                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
+                System.out.println(
+                        String.format("SUBMIT FAIL: taskId=%s, status=%s, dealingCount = %s", taskId, dealingCount));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));

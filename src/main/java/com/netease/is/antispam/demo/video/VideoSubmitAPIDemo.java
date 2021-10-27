@@ -5,16 +5,17 @@
  */
 package com.netease.is.antispam.demo.video;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * 调用易盾反垃圾云服务视频信息提交接口API示例，该示例依赖以下jar包：
@@ -41,7 +42,7 @@ public class VideoSubmitAPIDemo {
     /**
      * 易盾反垃圾云服务视频信息提交接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v3/video/submit";
+    private final static String API_URL = "http://as.dun.163.com/v4/video/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,7 +53,7 @@ public class VideoSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3");
+        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
@@ -60,8 +61,8 @@ public class VideoSubmitAPIDemo {
         // 2.设置私有参数
         params.put("url", "http://xxx.xxx.com/xxxx");
         params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
-        // params.put("callback", "{\"p\":\"xx\"}");
-        // params.put("scFrequency", "5");
+        params.put("callback", "{\"p\":\"xx\"}");
+        params.put("scFrequency", "5");
         // 主动回调地址url,如果设置了则走主动回调逻辑
         // params.put("callbackUrl", "http://***");
 
@@ -81,10 +82,12 @@ public class VideoSubmitAPIDemo {
             // status 0:成功，1:失败
             int status = result.get("status").getAsInt();
             String taskId = result.get("taskId").getAsString();
+            // 缓冲池排队待处理数据量
+            int dealingCount = result.get("dealingCount").getAsInt();
             if (status == 0) {
-                System.out.println(String.format("推送成功!taskId=%s", taskId));
+                System.out.println(String.format("推送成功!taskId=%s, 缓冲池排队待处理数据量%s", taskId, dealingCount));
             } else {
-                System.out.println(String.format("推送失败!taskId=%s", taskId));
+                System.out.println(String.format("推送失败!taskId=%s, 缓冲池排队待处理数据量%s", taskId, dealingCount));
             }
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));

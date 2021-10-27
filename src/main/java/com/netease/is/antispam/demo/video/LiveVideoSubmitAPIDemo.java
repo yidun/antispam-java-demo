@@ -42,7 +42,7 @@ public class LiveVideoSubmitAPIDemo {
     /**
      * 易盾反垃圾云服务直播流信息提交接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v3/livevideo/submit";
+    private final static String API_URL = "http://as.dun.163.com/v4/livevideo/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -53,7 +53,7 @@ public class LiveVideoSubmitAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        params.put("version", "v3");
+        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
