@@ -1,5 +1,5 @@
 /*
- * @(#) ReportSolutionSubmitAPIDemo.java 2021-09-03
+ * @(#) MediaSolutionSubmitV2APIDemo.java 2021-09-03
  *
  * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
@@ -36,7 +36,7 @@ public class MediaSolutionSubmitV2APIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾举报解决方案在线检测接口地址
+     * 融媒体解决方案检测提交接口地址
      */
     private final static String API_URL = "http://as.dun.163.com/v2/mediasolution/submit";
     /**
@@ -58,28 +58,38 @@ public class MediaSolutionSubmitV2APIDemo {
         // 2.设置私有参数
         params.put("title", "融媒体解决方案的标题");
         params.put("callback", "i am callback");
+
+        //融媒体检测内容
         JsonArray jsonArray = new JsonArray();
-        // 传图片url进行检测，name结构产品自行设计，用于唯一定位该图片数据
+        //文本
         JsonObject text = new JsonObject();
         text.addProperty("type", "text");
         text.addProperty("data", "融媒体文本段落");
         text.addProperty("dataId", "0001");
         jsonArray.add(text);
+        //图片
         JsonObject image = new JsonObject();
         image.addProperty("type", "image");
         image.addProperty("data", "http://xxx.jpg");
+        image.addProperty("dataId", "0002");
         jsonArray.add(image);
+        //音频
         JsonObject audio = new JsonObject();
         audio.addProperty("type", "audio");
         audio.addProperty("data", "http://xxx.mp3");
+        audio.addProperty("dataId", "0003");
         jsonArray.add(audio);
+        //视频
         JsonObject audiovideo = new JsonObject();
         audiovideo.addProperty("type", "audiovideo");
         audiovideo.addProperty("data", "http://xxx.mp4");
         jsonArray.add(audiovideo);
+        audiovideo.addProperty("dataId", "0004");
+        //文档
         JsonObject file = new JsonObject();
         file.addProperty("type", "file");
         file.addProperty("data", "http://xxx.txt");
+        file.addProperty("dataId", "0004");
         jsonArray.add(file);
         params.put("content", jsonArray.toString());
 

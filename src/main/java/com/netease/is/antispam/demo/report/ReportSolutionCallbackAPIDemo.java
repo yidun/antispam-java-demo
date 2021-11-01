@@ -35,9 +35,9 @@ public class ReportSolutionCallbackAPIDemo {
     /**
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
-    private final static String SECRETKEY = "your_secret_id";
+    private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾云服务举报解决方案离线结果获取接口地址
+     * 举报解决方案离线结果获取接口地址
      */
     private final static String API_URL = "http://as.dun.163.com/v1/report/callback/results";
     /**

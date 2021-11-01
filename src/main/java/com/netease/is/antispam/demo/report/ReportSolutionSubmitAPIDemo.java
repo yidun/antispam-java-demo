@@ -36,7 +36,7 @@ public class ReportSolutionSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾举报解决方案在线检测接口地址
+     * 易盾反垃圾举报解决方案检测提交接口地址
      */
     private final static String API_URL = "http://as.dun.163.com/v1/report/submit";
     /**
