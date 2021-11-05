@@ -1,10 +1,10 @@
 /*
- * @(#) ReportSolutionCallbackAPIDemo.java 2021-09-03
+ * @(#) DigitalBookCallbackV2APIDemo.java 2021-11-01
  *
  * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.report;
+package com.netease.is.antispam.demo.digitalbook;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 举报解决方案获取结果-轮询模式接口API示例
+ * 数字阅读解决方案获取结果-轮询模式接口API示例-v2版本
  *
  * @author spring404
- * @version 2021-09-03
+ * @version 2021-11-01
  */
-public class ReportSolutionCallbackAPIDemo {
+public class DigitalBookCallbackV2APIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -37,9 +37,9 @@ public class ReportSolutionCallbackAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 举报解决方案离线结果获取接口地址
+     * 数字阅读解决方案离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/report/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v2/digital/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -47,10 +47,10 @@ public class ReportSolutionCallbackAPIDemo {
 
 
     public static void main(String[] args) {
-        Map<String, String> params = new HashMap<>(16);
+        Map<String, String> params = new HashMap<String, String>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
@@ -78,9 +78,17 @@ public class ReportSolutionCallbackAPIDemo {
                     if (machineCheckResult != null) {
                         System.out.printf("机器检测结果:%s%n", machineCheckResult);
                     }
+                    JsonObject valueAddServiceResult = jsonObject.getAsJsonObject("valueAddService");
+                    if (valueAddServiceResult != null) {
+                        System.out.printf("增值服务结果:%s%n", valueAddServiceResult);
+                    }
+                    JsonObject antiCheatResult = jsonObject.getAsJsonObject("anticheat");
+                    if (antiCheatResult != null) {
+                        System.out.printf("反作弊结果:%s%n", antiCheatResult);
+                    }
                     JsonObject censorResult = jsonObject.getAsJsonObject("censor");
                     if (censorResult != null) {
-                        System.out.printf("审核结果:%s%n", censorResult);
+                        System.out.printf("人工审核结果:%s%n", censorResult);
                     }
 
                 }

@@ -1,10 +1,10 @@
 /*
- * @(#) ReportSolutionSubmitAPIDemo.java 2021-09-03
+ * @(#) DigitalBookSubmitV2APIDemo.java 2021-11-01
  *
  * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.report;
+package com.netease.is.antispam.demo.digitalbook;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,12 +20,12 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 举报解决方案检测提交接口API示例
+ * 数字阅读解决方案检测提交接口API示例-v2版本
  *
  * @author spring404
- * @version 2021-09-03
+ * @version 2021-11-01
  */
-public class ReportSolutionSubmitAPIDemo {
+public class DigitalBookSubmitV2APIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -36,9 +36,9 @@ public class ReportSolutionSubmitAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 易盾反垃圾举报解决方案检测提交接口地址
+     * 数字阅读解决方案提交接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/report/submit";
+    private final static String API_URL = "http://as.dun.163.com/v2/digital/submit";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -49,39 +49,32 @@ public class ReportSolutionSubmitAPIDemo {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
-        params.put("dataId", "0000");
+        params.put("bookId", "book0001");
+        params.put("type", "1");
         params.put("callback", "i am callback");
-        params.put("account", "account1");
-        params.put("scenarios", "直播涉政");
-        params.put("roomId", "room3");
-        params.put("reportedId", "user010");
-        params.put("reportType", "举报类型");
-        //举报内容
+
+        //作品信息
         JsonArray jsonArray = new JsonArray();
         JsonObject text = new JsonObject();
+        // 作品文本内容
         text.addProperty("type", "text");
-        text.addProperty("data", "文本信息");
+        text.addProperty("data", "文章文本内容");
+        text.addProperty("dataId", "0001");
         jsonArray.add(text);
+        // 作品图片内容
         JsonObject image = new JsonObject();
         image.addProperty("type", "image");
         image.addProperty("data", "http://xxx.jpg");
+        image.addProperty("dataId", "0002");
         jsonArray.add(image);
-        JsonObject audio = new JsonObject();
-        audio.addProperty("type", "audio");
-        audio.addProperty("data", "http://xxx.mp3");
-        jsonArray.add(audio);
-        JsonObject audiovideo = new JsonObject();
-        audiovideo.addProperty("type", "audiovideo");
-        audiovideo.addProperty("data", "http://xxx.mp4");
-        jsonArray.add(audiovideo);
-        params.put("content", jsonArray.toString());
+        params.put("bookInformation", jsonArray.toString());
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);

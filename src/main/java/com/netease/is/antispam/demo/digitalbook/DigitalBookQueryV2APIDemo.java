@@ -1,10 +1,10 @@
 /*
- * @(#) ReportSolutionCallbackAPIDemo.java 2021-09-03
+ * @(#) DigitalBookQueryV2APIDemo.java 2021-09-03
  *
  * Copyright 2021 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.report;
+package com.netease.is.antispam.demo.digitalbook;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 举报解决方案获取结果-轮询模式接口API示例
+ * 数字阅读解决方案回调结果查询接口API示例-v2版本
  *
  * @author spring404
- * @version 2021-09-03
+ * @version 2021-11-01
  */
-public class ReportSolutionCallbackAPIDemo {
+public class DigitalBookQueryV2APIDemo {
 
     /**
      * 产品密钥ID，产品标识
@@ -37,29 +37,30 @@ public class ReportSolutionCallbackAPIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 举报解决方案离线结果获取接口地址
+     * 数字阅读解决方案回调结果查询接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/report/callback/results";
+    private final static String API_URL = "http://as.dun.163.com/v2/digital/callback/query";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
-    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
+    private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000 * 60 * 5, 2000, 2000);
 
 
     public static void main(String[] args) {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v1");
+        params.put("version", "v2");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
+
+        params.put("taskIds", "['e0d3mq8dy16b6itm9q0oxodg05009qm1']");
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
-
         // 3.发送HTTP请求，这里使用的是HttpClient工具包，产品可自行选择自己熟悉的工具包发送请求
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
@@ -78,9 +79,17 @@ public class ReportSolutionCallbackAPIDemo {
                     if (machineCheckResult != null) {
                         System.out.printf("机器检测结果:%s%n", machineCheckResult);
                     }
+                    JsonObject valueAddServiceResult = jsonObject.getAsJsonObject("valueAddService");
+                    if (valueAddServiceResult != null) {
+                        System.out.printf("增值服务结果:%s%n", valueAddServiceResult);
+                    }
+                    JsonObject antiCheatResult = jsonObject.getAsJsonObject("anticheat");
+                    if (antiCheatResult != null) {
+                        System.out.printf("反作弊结果:%s%n", antiCheatResult);
+                    }
                     JsonObject censorResult = jsonObject.getAsJsonObject("censor");
                     if (censorResult != null) {
-                        System.out.printf("审核结果:%s%n", censorResult);
+                        System.out.printf("人工审核结果:%s%n", censorResult);
                     }
 
                 }

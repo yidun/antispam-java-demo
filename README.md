@@ -40,6 +40,9 @@ http://dun.163.com
 ├── MediaSolutionSubmitV2APIDemo.java 融媒体解决方案检测提交接口演示
 ├── MediaSolutionCallbackV2APIDemo.java 融媒体解决方案获取结果-轮询模式接口演示
 ├── MediaSolutionQueryV2APIDemo.java 融媒体解决方案回调查询接口演示
+├── DigitalBookSubmitV2APIDemo.java 数字阅读解决方案检测提交接口演示
+├── DigitalBookCallbackV2APIDemo.java 数字阅读解决方案获取结果-轮询模式接口演示
+├── DigitalBookQueryV2APIDemo.java 数字阅读解决方案回调查询接口演示
 ├── ReportSolutionSubmitAPIDemo.java 举报解决方案检测提交接口演示
 ├── ReportSolutionCallbackAPIDemo.java 举报方案获取结果-轮询模式接口演示
 ├── ReportSolutionQueryAPIDemo.java 举报解决方案回调查询接口演示
