@@ -27,11 +27,11 @@ public class GovernmentQueryAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
-    private final static String SECRETID = "YvdOsdj21k5Iod_jkmLimi_D0gA";
+    private final static String SECRETID = "your_secret_id";
     /**
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
-    private final static String SECRETKEY = "iiDzJiIaOkuG0yrU_uejZ-TXUno";
+    private final static String SECRETKEY = "your_secret_key";
     /**
      * 易盾反垃圾云服务图片在线检测接口地址
      */
@@ -56,7 +56,7 @@ public class GovernmentQueryAPIDemo {
         headers.put("X-YD-NONCE", nonce);
         // 组装私有参数
         Map<String, String> params = new HashMap<>();
-        params.put("clientId", "c95ee6a20ccc4eb3ae93730ef09d398f8949390643487017337");
+        params.put("clientId", "your_client_id");
         params.put("startTime", String.valueOf(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 3));
         params.put("endTime", String.valueOf(System.currentTimeMillis()));
         // 生成签名
