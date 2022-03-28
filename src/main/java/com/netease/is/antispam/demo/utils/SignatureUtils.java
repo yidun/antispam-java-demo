@@ -5,16 +5,18 @@
  */
 package com.netease.is.antispam.demo.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.crypto.digests.SM3Digest;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 生成及验证签名信息工具类
@@ -23,6 +25,9 @@ import java.util.Map;
  * @version 2016年2月2日
  */
 public class SignatureUtils {
+
+    private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+            'f'};
 
     /**
      * 通过HttpServletRequest做签名验证
@@ -33,7 +38,8 @@ public class SignatureUtils {
      * @param businessid
      * @return
      */
-    public static boolean verifySignature(HttpServletRequest request, String secretid, String secretkey, String businessid)
+    public static boolean verifySignature(HttpServletRequest request, String secretid, String secretkey,
+            String businessid)
             throws UnsupportedEncodingException {
         String secretId = request.getParameter("secretId");
         String businessId = request.getParameter("businessId");
@@ -56,6 +62,7 @@ public class SignatureUtils {
 
     /**
      * 默认使用md5方式
+     * 
      * @param secretKey
      * @param params
      * @return
@@ -66,6 +73,7 @@ public class SignatureUtils {
 
     /**
      * 通用签名方式
+     * 
      * @param secretKey
      * @param signatureMethod
      * @param params
@@ -84,13 +92,17 @@ public class SignatureUtils {
         sb.append(secretKey);
         try {
             // 默认使用MD5
-            SignatureMethodEnum signatureMethodEnum = StringUtils.isBlank(signatureMethod) ?
-                    SignatureMethodEnum.MD5 : SignatureMethodEnum.valueOf(StringUtils.upperCase(signatureMethod));
+            SignatureMethodEnum signatureMethodEnum = StringUtils.isBlank(signatureMethod) ? SignatureMethodEnum.MD5
+                    : SignatureMethodEnum.valueOf(StringUtils.upperCase(signatureMethod));
             switch (signatureMethodEnum) {
-                case MD5:  return DigestUtils.md5Hex(sb.toString().getBytes("UTF-8"));
-                case SHA1: return DigestUtils.sha1Hex(sb.toString().getBytes("UTF-8"));
-                case SHA256: return DigestUtils.sha256Hex(sb.toString().getBytes("UTF-8"));
-                case SM3: return sm3DigestHex(sb.toString().getBytes("UTF-8"));
+                case MD5:
+                    return DigestUtils.md5Hex(sb.toString().getBytes("UTF-8"));
+                case SHA1:
+                    return DigestUtils.sha1Hex(sb.toString().getBytes("UTF-8"));
+                case SHA256:
+                    return DigestUtils.sha256Hex(sb.toString().getBytes("UTF-8"));
+                case SM3:
+                    return sm3DigestHex(sb.toString().getBytes("UTF-8"));
                 default:
                     System.out.println("[ERROR] unsupported signature method: " + signatureMethod);
                     return null;
@@ -105,7 +117,35 @@ public class SignatureUtils {
         SM3Digest sm3Digest = new SM3Digest();
         sm3Digest.update(srcData, 0, srcData.length);
         byte[] hash = new byte[sm3Digest.getDigestSize()];
-        sm3Digest.doFinal(hash, 0); return Hex.encodeHexString(hash);
+        sm3Digest.doFinal(hash, 0);
+        return Hex.encodeHexString(hash);
+    }
+
+    public static String getCheckSum(String key, String secret, String nonce, String currentTime) {
+        StringBuilder stringBuffer = new StringBuilder(key).append(secret).append(nonce).append(currentTime);
+        return encode("sha1", stringBuffer.toString());
+    }
+
+    private static String encode(String algorithm, String value) {
+        String result = null;
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+            messageDigest.update(value.getBytes("UTF-8"));
+            result = getFormattedText(messageDigest.digest());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    private static String getFormattedText(byte[] bytes) {
+        int length = bytes.length;
+        StringBuilder buf = new StringBuilder(length * 2);
+        for (int j = 0; j < length; j++) {
+            buf.append(HEX_DIGITS[(bytes[j] >> 4) & 0x0f]);
+            buf.append(HEX_DIGITS[bytes[j] & 0x0f]);
+        }
+        return buf.toString();
     }
 
 }
