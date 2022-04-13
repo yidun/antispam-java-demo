@@ -6,14 +6,15 @@
 
 package com.netease.is.antispam.demo.image;
 
+import java.util.Map;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
 
 /**
  * 调用易盾反垃圾云服务图片名单更新接口API示例
@@ -52,6 +53,9 @@ public class ImageListUpdateAPIDemo {
         params.put("type", "1");
         params.put("uuid", "512e7771c3074621914ae1894e0df5c1");
         params.put("status", "0");
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);

@@ -5,13 +5,15 @@
  */
 package com.netease.is.antispam.demo.file.v2;
 
-import com.google.gson.*;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.SignatureUtils;
+import java.util.*;
+
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import java.util.*;
+import com.google.gson.*;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务文本结果查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
@@ -42,13 +44,16 @@ public class FileQueryByTaskIdDemoV2 {
         params.put("version", "v2.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
         taskIds.add("26f8561ce4d144e8bf2c2aafd04ab645");
         params.put("taskIds", new Gson().toJson(taskIds));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

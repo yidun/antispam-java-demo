@@ -6,18 +6,20 @@
 
 package com.netease.is.antispam.demo.mediasolution.v2;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 融媒体解决方案检测提交接口API示例-v2版本
@@ -44,7 +46,6 @@ public class MediaSolutionSubmitV2APIDemo {
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
-
     public static void main(String[] args) {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
@@ -59,33 +60,33 @@ public class MediaSolutionSubmitV2APIDemo {
         params.put("title", "融媒体解决方案的标题");
         params.put("callback", "i am callback");
 
-        //融媒体检测内容
+        // 融媒体检测内容
         JsonArray jsonArray = new JsonArray();
-        //文本
+        // 文本
         JsonObject text = new JsonObject();
         text.addProperty("type", "text");
         text.addProperty("data", "融媒体文本段落");
         text.addProperty("dataId", "0001");
         jsonArray.add(text);
-        //图片
+        // 图片
         JsonObject image = new JsonObject();
         image.addProperty("type", "image");
         image.addProperty("data", "http://xxx.jpg");
         image.addProperty("dataId", "0002");
         jsonArray.add(image);
-        //音频
+        // 音频
         JsonObject audio = new JsonObject();
         audio.addProperty("type", "audio");
         audio.addProperty("data", "http://xxx.mp3");
         audio.addProperty("dataId", "0003");
         jsonArray.add(audio);
-        //视频
+        // 视频
         JsonObject audiovideo = new JsonObject();
         audiovideo.addProperty("type", "audiovideo");
         audiovideo.addProperty("data", "http://xxx.mp4");
         jsonArray.add(audiovideo);
         audiovideo.addProperty("dataId", "0004");
-        //文档
+        // 文档
         JsonObject file = new JsonObject();
         file.addProperty("type", "file");
         file.addProperty("data", "http://xxx.txt");
@@ -93,6 +94,8 @@ public class MediaSolutionSubmitV2APIDemo {
         jsonArray.add(file);
         params.put("content", jsonArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * FileSubmitApiDemo
@@ -49,7 +50,8 @@ public class FileSubmitAPIDemo {
         params.put("version", "v1.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
@@ -61,6 +63,8 @@ public class FileSubmitAPIDemo {
         params.put("callback", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         params.put("publishTime", String.valueOf(System.currentTimeMillis()));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

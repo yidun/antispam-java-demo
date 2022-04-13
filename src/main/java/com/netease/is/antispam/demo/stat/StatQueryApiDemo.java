@@ -15,6 +15,7 @@ import org.apache.http.client.HttpClient;
 
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务内容风险查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用sha1算法生成签名信息，详细见SignatureUtils.java
@@ -59,6 +60,10 @@ public class StatQueryApiDemo {
         params.put("clientId", "your_client_id");
         params.put("startTime", String.valueOf(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 3));
         params.put("endTime", String.valueOf(System.currentTimeMillis()));
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 生成签名
         String signString = SignatureUtils.getCheckSum(genSignatureSring(params), SECRETKEY, nonce, timestamp + "");
         headers.put("X-YD-SIGN", signString);

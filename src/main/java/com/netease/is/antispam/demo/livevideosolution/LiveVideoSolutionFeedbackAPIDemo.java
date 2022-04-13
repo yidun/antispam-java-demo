@@ -18,7 +18,6 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
 
-
 /**
  * 调用易盾云服务实时更新直播音视频信息接口API示例
  *
@@ -60,6 +59,9 @@ public class LiveVideoSolutionFeedbackAPIDemo {
         JsonArray realTimeInfoArray = new JsonArray();
         realTimeInfoArray.add(realTimeInfo);
         params.put("realTimeInfoList", new Gson().toJson(realTimeInfoArray));
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);

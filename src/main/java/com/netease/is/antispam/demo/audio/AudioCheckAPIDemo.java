@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务点播语音在线检测接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
@@ -62,6 +63,8 @@ public class AudioCheckAPIDemo {
         // 2.设置私有参数
         params.put("url", "http://xxx.xx");
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

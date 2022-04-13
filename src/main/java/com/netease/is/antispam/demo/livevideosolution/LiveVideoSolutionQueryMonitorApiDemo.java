@@ -47,6 +47,10 @@ public class LiveVideoSolutionQueryMonitorApiDemo {
         Map<String, String> params = Utils.getCommonParams(SECRETID, "v1.0", "MD5");
         // 2. 设置私有参数
         params.put("taskId", "95b9496929a647d3be6bee74db639eab");
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 

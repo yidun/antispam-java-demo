@@ -5,27 +5,18 @@
  */
 package com.netease.is.antispam.demo.image;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务图片结果查询接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务图片结果查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
  * @author hzgaomin
@@ -56,7 +47,8 @@ public class ImageQueryByTaskIdsDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
@@ -64,6 +56,8 @@ public class ImageQueryByTaskIdsDemo {
         taskIds.add("0f0345933b05489c9b60635b0c8cc721");
         params.put("taskIds", new Gson().toJson(taskIds));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

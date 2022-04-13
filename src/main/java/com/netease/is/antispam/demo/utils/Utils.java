@@ -32,7 +32,8 @@ public class Utils {
         return getCommonParams(secretId, "", version, signatureMethod);
     }
 
-    public static Map<String, String> getCommonParams(String secretId, String businessId, String version, String signatureMethod) {
+    public static Map<String, String> getCommonParams(String secretId, String businessId, String version,
+            String signatureMethod) {
         Map<String, String> params = new HashMap<>();
         params.put(SECRET_ID, secretId);
         if (StringUtils.isNotBlank(businessId)) {
@@ -61,5 +62,22 @@ public class Utils {
 
     public static Long getLongProperty(JsonObject obj, String memberName) {
         return obj.has(memberName) ? obj.get(memberName).getAsLong() : null;
+    }
+
+    /**
+     * 预处理参数
+     * 
+     * @param params
+     * @return
+     */
+    public static Map<String, String> pretreatmentParams(Map<String, String> params) {
+        Map<String, String> result = new HashMap<>(params.size());
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            // 过滤空值与原始参数中的signature，避免签名串与实际请求参数不一致导致签名校验失败
+            if (entry.getValue() != null && !"signature".equals(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 }

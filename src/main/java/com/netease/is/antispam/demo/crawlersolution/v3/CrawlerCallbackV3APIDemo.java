@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 网站解决方案获取结果-轮询模式接口API示例-v3版本
@@ -56,6 +57,8 @@ public class CrawlerCallbackV3APIDemo {
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

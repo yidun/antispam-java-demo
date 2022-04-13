@@ -46,12 +46,15 @@ public class LiveAudioQueryExtraAPIDemo {
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
-
     public static void main(String[] args) throws Exception {
         // 1. 设置公共参数
         Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v1.0", "MD5");
         // 2. 设置私有参数
         params.put("taskId", "xxx");
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 

@@ -5,27 +5,18 @@
  */
 package com.netease.is.antispam.demo.text;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务文本结果查询接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务文本结果查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
  * @author hzgaomin
@@ -56,7 +47,8 @@ public class TextQueryByTaskIdsDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
@@ -64,6 +56,11 @@ public class TextQueryByTaskIdsDemo {
         taskIds.add("49800dc7877f4b2a9d2e1dec92b988b6");
         params.put("taskIds", new Gson().toJson(taskIds));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
@@ -84,18 +81,19 @@ public class TextQueryByTaskIdsDemo {
                 int status = jObject.get("status").getAsInt();
                 String callback = jObject.get("callback").isJsonNull() ? "" : jObject.get("callback").getAsString();
                 JsonArray labelArray = jObject.getAsJsonArray("labels");
-                /*for (JsonElement labelElement : labelArray) {
-                    JsonObject lObject = labelElement.getAsJsonObject();
-                    int label = lObject.get("label").getAsInt();
-                    int level = lObject.get("level").getAsInt();
-                    JsonObject detailsObject=lObject.getAsJsonObject("details");
-                    JsonArray hintArray=detailsObject.getAsJsonArray("hint");
-                }*/
+                /*
+                 * for (JsonElement labelElement : labelArray) { JsonObject lObject = labelElement.getAsJsonObject();
+                 * int label = lObject.get("label").getAsInt(); int level = lObject.get("level").getAsInt(); JsonObject
+                 * detailsObject=lObject.getAsJsonObject("details"); JsonArray
+                 * hintArray=detailsObject.getAsJsonArray("hint"); }
+                 */
                 if (action == 0) {
-                    System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：通过", taskId, status, callback));
+                    System.out.println(
+                            String.format("taskId=%s，status=%s，callback=%s，文本查询结果：通过", taskId, status, callback));
                 } else if (action == 2) {
-                    System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：不通过，分类信息如下：%s", taskId,status, callback,
-                                                     labelArray.toString()));
+                    System.out.println(String.format("taskId=%s，status=%s，callback=%s，文本查询结果：不通过，分类信息如下：%s", taskId,
+                            status, callback,
+                            labelArray.toString()));
                 }
             }
         } else {

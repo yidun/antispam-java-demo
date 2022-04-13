@@ -57,7 +57,8 @@ public class LiveVideoQueryByTaskIdsDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
@@ -65,6 +66,8 @@ public class LiveVideoQueryByTaskIdsDemo {
         taskIds.add("49800dc7877f4b2a9d2e1dec92b988b6");
         params.put("taskIds", new Gson().toJson(taskIds));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

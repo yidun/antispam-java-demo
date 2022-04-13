@@ -6,6 +6,13 @@
 
 package com.netease.is.antispam.demo.digitalbook;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,12 +20,7 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 数字阅读解决方案回调结果查询接口API示例-v2版本
@@ -45,7 +47,6 @@ public class DigitalBookQueryV2APIDemo {
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 1000 * 60 * 5, 2000, 2000);
 
-
     public static void main(String[] args) {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
@@ -56,8 +57,9 @@ public class DigitalBookQueryV2APIDemo {
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
-
         params.put("taskIds", "['e0d3mq8dy16b6itm9q0oxodg05009qm1']");
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
