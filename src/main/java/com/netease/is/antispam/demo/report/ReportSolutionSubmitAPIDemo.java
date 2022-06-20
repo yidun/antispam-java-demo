@@ -6,18 +6,20 @@
 
 package com.netease.is.antispam.demo.report;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 举报解决方案检测提交接口API示例
@@ -44,7 +46,6 @@ public class ReportSolutionSubmitAPIDemo {
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
-
     public static void main(String[] args) {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
@@ -63,7 +64,7 @@ public class ReportSolutionSubmitAPIDemo {
         params.put("roomId", "room3");
         params.put("reportedId", "user010");
         params.put("reportType", "举报类型");
-        //举报内容
+        // 举报内容
         JsonArray jsonArray = new JsonArray();
         JsonObject text = new JsonObject();
         text.addProperty("type", "text");
@@ -83,6 +84,8 @@ public class ReportSolutionSubmitAPIDemo {
         jsonArray.add(audiovideo);
         params.put("content", jsonArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

@@ -6,16 +6,17 @@
 
 package com.netease.is.antispam.demo.image;
 
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 调用易盾反垃圾云服务图片名单查询接口API示例
@@ -59,6 +60,9 @@ public class ImageListQueryAPIDemo {
         params.put("listType", "2");
         params.put("status", "1");
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 
@@ -87,7 +91,8 @@ public class ImageListQueryAPIDemo {
                     String nosPath = item.get("nosPath").getAsString();
                 }
             }
-            System.out.printf("count:%d, rows:%s%n", count, Optional.ofNullable(rows).orElse(new JsonArray()).toString());
+            System.out.printf("count:%d, rows:%s%n", count,
+                    Optional.ofNullable(rows).orElse(new JsonArray()).toString());
         } else {
             System.out.printf("ERROR: code=%s, msg=%s%n", code, msg);
         }

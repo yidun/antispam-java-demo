@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务网站检测解决方案提交接口V3 API实例
@@ -46,7 +47,8 @@ public class CrawlerSubmitV3APIDemo {
         params.put("version", "v3.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         params.put("dataId", "6a7c754f9de34eb8bfdf03f209fcfc02");
@@ -57,6 +59,8 @@ public class CrawlerSubmitV3APIDemo {
         // 回调地址。调用方用来接收易盾主动回调结果的api地址
         params.put("callbackUrl", "http://xxx");
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

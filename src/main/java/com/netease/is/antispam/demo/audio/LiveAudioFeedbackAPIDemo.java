@@ -59,6 +59,9 @@ public class LiveAudioFeedbackAPIDemo {
         feedbackArray.add(realTimeInfoLis);
         params.put("realTimeInfoLis", new Gson().toJson(feedbackArray));
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);
 

@@ -18,7 +18,6 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
 
-
 /**
  * 调用易盾云服务查询视频截图信息接口API示例
  *
@@ -56,6 +55,9 @@ public class LiveVideoSolutionQueryImageAPIDemo {
         params.put("taskId", "95b9496929a647d3be6bee74db639eab");
         params.put("pageNum", "1");
         params.put("pageSize", "10");
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);

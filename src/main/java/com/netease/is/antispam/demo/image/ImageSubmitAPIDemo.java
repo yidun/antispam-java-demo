@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 调用易盾反垃圾云服务图片批量提交接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
@@ -51,7 +52,8 @@ public class ImageSubmitAPIDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         JsonArray imageArray = new JsonArray();
@@ -76,7 +78,7 @@ public class ImageSubmitAPIDemo {
         // 审核后是否需要主动回调，需要则设置主动回调url
         image1.addProperty("callbackUrl", "http://####");
 
-        //-----------------------------------细分类subLabel相关 开始-----------------------------------------
+        // -----------------------------------细分类subLabel相关 开始-----------------------------------------
         // 命中的线索信息
         JsonObject subLabelHitInfoJson = new JsonObject();
         // 图片中包含的可识别内容
@@ -102,9 +104,9 @@ public class ImageSubmitAPIDemo {
         // 细分类相关
         image1.add("subLabel", subLabelJson);
 
-        //-----------------------------------细分类subLabel相关 结束-----------------------------------------
+        // -----------------------------------细分类subLabel相关 结束-----------------------------------------
 
-        //-----------------------------------ocr相关 开始-----------------------------------------
+        // -----------------------------------ocr相关 开始-----------------------------------------
         // OCR行信息
         JsonObject ocrLineJson = new JsonObject();
         // 每行的文字信息
@@ -123,9 +125,9 @@ public class ImageSubmitAPIDemo {
 
         // ocr相关
         image1.add("ocr", ocrJson);
-        //-----------------------------------ocr相关 结束-----------------------------------------
+        // -----------------------------------ocr相关 结束-----------------------------------------
 
-        //-----------------------------------人脸信息相关 开始-----------------------------------------
+        // -----------------------------------人脸信息相关 开始-----------------------------------------
         // 人脸详细信息
         JsonObject faceLineJson = new JsonObject();
 
@@ -141,7 +143,6 @@ public class ImageSubmitAPIDemo {
         faceLineJson.addProperty("x2", 0.55);
         faceLineJson.addProperty("y2", 0.77);
 
-
         JsonArray faceArray = new JsonArray();
         faceArray.add(faceLineJson);
 
@@ -150,9 +151,9 @@ public class ImageSubmitAPIDemo {
 
         // 人脸检测信息
         image1.add("face", faceJson);
-        //-----------------------------------人脸信息相关 结束-----------------------------------------
+        // -----------------------------------人脸信息相关 结束-----------------------------------------
 
-        //-----------------------------------图片质量相关 开始-----------------------------------------
+        // -----------------------------------图片质量相关 开始-----------------------------------------
         JsonObject qualityJson = new JsonObject();
         // 美观度分数，0-1，分数越高美观度越高
         qualityJson.addProperty("aestheticsRate", 0.66);
@@ -160,7 +161,7 @@ public class ImageSubmitAPIDemo {
         qualityJson.addProperty("sharpnessRate", 0.66);
 
         image1.add("quality", qualityJson);
-        //-----------------------------------图片质量相关 结束-----------------------------------------
+        // -----------------------------------图片质量相关 结束-----------------------------------------
 
         imageArray.add(image1);
 
@@ -173,6 +174,8 @@ public class ImageSubmitAPIDemo {
         imageArray.add(image2);
         params.put("images", imageArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

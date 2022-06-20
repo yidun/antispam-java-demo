@@ -5,24 +5,19 @@
  */
 package com.netease.is.antispam.demo.image;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.netease.is.antispam.demo.utils.HttpClient4Utils;
-import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
+import com.google.gson.*;
+import com.netease.is.antispam.demo.utils.HttpClient4Utils;
+import com.netease.is.antispam.demo.utils.Utils;
+
 /**
- * 调用易盾反垃圾云服务图片结果查询接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务图片结果查询接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  * 
  * @author hzgaomin
@@ -54,6 +49,9 @@ public class ImageAsyncResultAPIDemo {
         taskIds.add("202b1d65f5854cecadcb24382b681c1a");
         taskIds.add("0f0345933b05489c9b60635b0c8cc721");
         params.put("taskIds", new Gson().toJson(taskIds));
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);

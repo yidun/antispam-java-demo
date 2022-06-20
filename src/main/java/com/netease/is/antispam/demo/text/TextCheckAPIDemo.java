@@ -5,22 +5,22 @@
  */
 package com.netease.is.antispam.demo.text;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务文本在线检测接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 调用易盾反垃圾云服务文本在线检测接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
  * 3. gson，用于做json解析
  *
  * @author hzgaomin
@@ -60,7 +60,8 @@ public class TextCheckAPIDemo {
         params.put("version", "v3.1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         params.put("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
@@ -74,6 +75,9 @@ public class TextCheckAPIDemo {
         // params.put("publishTime", String.valueOf(System.currentTimeMillis()));
         // 主动回调地址url,如果设置了则走主动回调逻辑
         // params.put("callbackUrl", "http://***");
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
@@ -91,18 +95,17 @@ public class TextCheckAPIDemo {
             int action = resultObject.get("action").getAsInt();
             String taskId = resultObject.get("taskId").getAsString();
             JsonArray labelArray = resultObject.getAsJsonArray("labels");
-            /*for (JsonElement labelElement : labelArray) {
-                JsonObject lObject = labelElement.getAsJsonObject();
-                int label = lObject.get("label").getAsInt();
-                int level = lObject.get("level").getAsInt();
-                JsonObject detailsObject = lObject.getAsJsonObject("details");
-                JsonArray hint = detailsObject.getAsJsonArray("hint");
-                JsonArray subLabels = lObject.getAsJsonArray("subLabels");
-            }*/
+            /*
+             * for (JsonElement labelElement : labelArray) { JsonObject lObject = labelElement.getAsJsonObject(); int
+             * label = lObject.get("label").getAsInt(); int level = lObject.get("level").getAsInt(); JsonObject
+             * detailsObject = lObject.getAsJsonObject("details"); JsonArray hint =
+             * detailsObject.getAsJsonArray("hint"); JsonArray subLabels = lObject.getAsJsonArray("subLabels"); }
+             */
             if (action == 0) {
                 System.out.println(String.format("taskId=%s，文本机器检测结果：通过", taskId));
             } else if (action == 1) {
-                System.out.println(String.format("taskId=%s，文本机器检测结果：嫌疑，需人工复审，分类信息如下：%s", taskId, labelArray.toString()));
+                System.out
+                        .println(String.format("taskId=%s，文本机器检测结果：嫌疑，需人工复审，分类信息如下：%s", taskId, labelArray.toString()));
             } else if (action == 2) {
                 System.out.println(String.format("taskId=%s，文本机器检测结果：不通过，分类信息如下：%s", taskId, labelArray.toString()));
             }

@@ -5,24 +5,24 @@
  */
 package com.netease.is.antispam.demo.text.v5;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务文本V5批量在线检测接口API示例，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 调用易盾反垃圾云服务文本V5批量在线检测接口API示例，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2.
+ * commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java 3. gson，用于做json解析
  *
  * @author yidun
  * @version 2021年08月31日
@@ -61,7 +61,8 @@ public class TextBatchCheckAPIDemoV5 {
         params.put("version", "v5");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         JsonArray textArray = new JsonArray();
@@ -85,6 +86,8 @@ public class TextBatchCheckAPIDemoV5 {
         textArray.add(text2);
         params.put("texts", textArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
@@ -112,8 +115,9 @@ public class TextBatchCheckAPIDemoV5 {
                             int censorType = antispam.get("censorType").getAsInt();
                             boolean isRelatedHit = antispam.get("isRelatedHit").getAsBoolean();
                             JsonArray labels = antispam.get("labels").getAsJsonArray();
-                            System.out.println(String.format("内容安全结果，taskId: %s，dataId: %s，suggestion: %s", taskId, dataId,
-                                    suggestion));
+                            System.out.println(
+                                    String.format("内容安全结果，taskId: %s，dataId: %s，suggestion: %s", taskId, dataId,
+                                            suggestion));
                             for (JsonElement labelElement : labels) {
                                 JsonObject labelItem = labelElement.getAsJsonObject();
                                 int label = labelItem.get("label").getAsInt();
@@ -123,7 +127,8 @@ public class TextBatchCheckAPIDemoV5 {
                                     for (JsonElement subLabelElement : subLabels) {
                                         JsonObject subLabelItem = subLabelElement.getAsJsonObject();
                                         String subLabel = subLabelItem.get("subLabel").getAsString();
-                                        System.out.println(String.format("内容安全分类，label: %s，subLabel: %s", label, subLabel));
+                                        System.out.println(
+                                                String.format("内容安全分类，label: %s，subLabel: %s", label, subLabel));
                                         if (subLabelItem.has("details")) {
                                             JsonObject details = subLabelItem.get("details").getAsJsonObject();
                                             // 自定义敏感词信息
@@ -154,11 +159,14 @@ public class TextBatchCheckAPIDemoV5 {
                                                     for (JsonElement hitInfoElement : hitInfos) {
                                                         JsonObject hitInfoItem = hitInfoElement.getAsJsonObject();
                                                         String value = hitInfoItem.get("value").getAsString();
-                                                        JsonArray positions = hitInfoItem.get("positions").getAsJsonArray();
+                                                        JsonArray positions = hitInfoItem.get("positions")
+                                                                .getAsJsonArray();
                                                         if (positions != null && positions.size() > 0) {
                                                             for (JsonElement positionElement : positions) {
-                                                                JsonObject positionItem = positionElement.getAsJsonObject();
-                                                                String fieldName = positionItem.get("fieldName").getAsString();
+                                                                JsonObject positionItem = positionElement
+                                                                        .getAsJsonObject();
+                                                                String fieldName = positionItem.get("fieldName")
+                                                                        .getAsString();
                                                                 int startPos = positionItem.get("startPos").getAsInt();
                                                                 int endPos = positionItem.get("endPos").getAsInt();
                                                             }
@@ -188,8 +196,9 @@ public class TextBatchCheckAPIDemoV5 {
                             String dataId = emotionAnalysis.get("dataId").getAsString();
                             if (emotionAnalysis.has("details")) {
                                 JsonArray details = emotionAnalysis.get("details").getAsJsonArray();
-                                System.out.println(String.format("情感分析结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
-                                        details));
+                                System.out.println(
+                                        String.format("情感分析结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
+                                                details));
                                 if (details != null && details.size() > 0) {
                                     for (JsonElement detailElement : details) {
                                         JsonObject detailItem = detailElement.getAsJsonObject();
@@ -210,8 +219,9 @@ public class TextBatchCheckAPIDemoV5 {
                             String dataId = anticheat.get("dataId").getAsString();
                             if (anticheat.has("details")) {
                                 JsonArray details = anticheat.get("details").getAsJsonArray();
-                                System.out.println(String.format("反作弊结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
-                                        details));
+                                System.out.println(
+                                        String.format("反作弊结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
+                                                details));
                                 if (details != null && details.size() > 0) {
                                     for (JsonElement detailElement : details) {
                                         JsonObject detailItem = detailElement.getAsJsonObject();
@@ -238,8 +248,9 @@ public class TextBatchCheckAPIDemoV5 {
                             String dataId = userRisk.get("dataId").getAsString();
                             if (userRisk.has("details")) {
                                 JsonArray details = userRisk.get("details").getAsJsonArray();
-                                System.out.println(String.format("用户画像结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
-                                        details));
+                                System.out.println(
+                                        String.format("用户画像结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
+                                                details));
                                 if (details != null && details.size() > 0) {
                                     for (JsonElement detailElement : details) {
                                         JsonObject detailItem = detailElement.getAsJsonObject();
@@ -259,8 +270,9 @@ public class TextBatchCheckAPIDemoV5 {
                             String dataId = language.get("dataId").getAsString();
                             if (language.has("details")) {
                                 JsonArray details = language.get("details").getAsJsonArray();
-                                System.out.println(String.format("语种检测结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
-                                        details));
+                                System.out.println(
+                                        String.format("语种检测结果，taskId: %s，dataId: %s，details: %s", taskId, dataId,
+                                                details));
                                 if (details != null && details.size() > 0) {
                                     for (JsonElement detailElement : details) {
                                         JsonObject detailItem = detailElement.getAsJsonObject();

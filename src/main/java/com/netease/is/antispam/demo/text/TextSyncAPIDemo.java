@@ -18,12 +18,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 易盾反垃圾云服务审核系统文本数据同步接口API示例，该接口不是检测接口，是智能审核系统数据同步接口，该示例依赖以下jar包：
- * 1. httpclient，用于发送http请求
- * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
- * 3. gson，用于做json解析
+ * 易盾反垃圾云服务审核系统文本数据同步接口API示例，该接口不是检测接口，是智能审核系统数据同步接口，该示例依赖以下jar包： 1. httpclient，用于发送http请求 2.
+ * commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java 3. gson，用于做json解析
  * 
  * @author hzgaomin
  * @version 2016年2月3日
@@ -53,25 +52,31 @@ public class TextSyncAPIDemo {
         params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        // MD5, SM3, SHA1, SHA256
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         JsonArray textArray = new JsonArray();
-        //dataId结构产品自行设计，用于唯一定位该文本数据
+        // dataId结构产品自行设计，用于唯一定位该文本数据
         JsonObject text1 = new JsonObject();
         text1.addProperty("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691768");
         text1.addProperty("content", "易盾测试内容！v1接口!");
-        text1.addProperty("action","0");
+        text1.addProperty("action", "0");
         textArray.add(text1);
 
         JsonObject text2 = new JsonObject();
         text2.addProperty("dataId", "ebfcad1c-dba1-490c-b4de-e784c2691767");
         text2.addProperty("content", "批量提交内容！v1接口!");
-        text2.addProperty("action","1");
+        text2.addProperty("action", "1");
         textArray.add(text2);
 
         params.put("texts", textArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

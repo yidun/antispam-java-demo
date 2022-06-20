@@ -6,6 +6,13 @@
 
 package com.netease.is.antispam.demo.report;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,12 +20,7 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.DemoConstants;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import com.netease.is.antispam.demo.utils.Utils;
 
 /**
  * 举报解决方案获取结果-轮询模式接口API示例
@@ -45,7 +47,6 @@ public class ReportSolutionCallbackAPIDemo {
      */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
-
     public static void main(String[] args) {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
@@ -56,6 +57,8 @@ public class ReportSolutionCallbackAPIDemo {
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 2.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);

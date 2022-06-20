@@ -66,6 +66,9 @@ public class ImageAsyncCheckV5APIDemo {
 
         params.put("images", jsonArray.toString());
 
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
+
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);
 

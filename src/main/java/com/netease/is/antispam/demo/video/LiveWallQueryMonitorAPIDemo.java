@@ -50,6 +50,8 @@ public class LiveWallQueryMonitorAPIDemo {
         Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v1.0", "MD5");
         // 2. 设置私有参数
         params.put("taskId", "49db4e9dc56a424bb720fb46071532b4");
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
         // 3. 生成签名信息
         Utils.sign(params, SECRETKEY);
 

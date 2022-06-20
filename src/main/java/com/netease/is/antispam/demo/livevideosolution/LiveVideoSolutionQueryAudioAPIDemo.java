@@ -18,7 +18,6 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.Utils;
 
-
 /**
  * 调用易盾云服务查询音频断句信息接口API示例
  *
@@ -56,6 +55,9 @@ public class LiveVideoSolutionQueryAudioAPIDemo {
         params.put("taskId", "292604e0200b4551b411c2d53adde893");
         params.put("startTime", String.valueOf(System.currentTimeMillis() - 10 * 60 * 1000));
         params.put("endTime", String.valueOf(System.currentTimeMillis()));// 最长支持查10分钟跨度
+
+        // 预处理参数
+        params = Utils.pretreatmentParams(params);
 
         // 3.生成签名信息
         Utils.sign(params, SECRETKEY);
