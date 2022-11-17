@@ -76,8 +76,8 @@ public class AudioCheckAPIDemo {
         String msg = jObject.get("msg").getAsString();
         if (code == 200) {
             JsonObject result = jObject.get("result").getAsJsonObject();
-            if (result.has("antisapm")) {
-                getAntispam(result.get("antisapm").getAsJsonObject());
+            if (result.has("antispam")) {
+                getAntispam(result.get("antispam").getAsJsonObject());
             }
             if (result.has("language")) {
                 getLanguage(result.get("language").getAsJsonObject());
