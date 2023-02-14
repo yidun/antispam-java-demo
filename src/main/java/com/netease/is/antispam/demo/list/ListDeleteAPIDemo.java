@@ -48,7 +48,7 @@ public class ListDeleteAPIDemo {
     /**
      * 易盾反垃圾云服务自定义用户名单删除接口地址
      */
-    private final static String API_URL = "https://as.dun.163yun.com/v2/list/batchDelete";
+    private final static String API_URL = "https://as.dun.163.com/v2/list/batchDelete";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

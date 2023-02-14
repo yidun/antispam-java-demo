@@ -41,7 +41,7 @@ public class PretreatmentAddAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务忽略词添加接口地址 */
-    private final static String API_URL = "http://as.dun.163.com/v2/pretreatment/add";
+    private final static String API_URL = "https://as.dun.163.com/v2/pretreatment/add";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 

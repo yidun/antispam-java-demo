@@ -40,7 +40,7 @@ public class PretreatmentQueryAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务忽略词查询接口地址 */
-    private final static String API_URL = "http://as.dun.163.com/v1/pretreatment/pageQuery";
+    private final static String API_URL = "https://as.dun.163.com/v1/pretreatment/pageQuery";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 
