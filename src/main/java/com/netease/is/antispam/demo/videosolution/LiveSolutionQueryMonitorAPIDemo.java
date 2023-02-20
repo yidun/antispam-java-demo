@@ -1,10 +1,10 @@
 /*
- * @(#) LiveWallQueryMonitorAPIDemo.java 2020-09-28
+ * @(#) LiveSolutionQueryMonitorAPIDemo.java 2020-09-28
  *
  * Copyright 2020 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.video;
+package com.netease.is.antispam.demo.videosolution;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import com.netease.is.antispam.demo.utils.Utils;
  * @author yd-dev
  * @version 2020-09-28
  */
-public class LiveWallQueryMonitorAPIDemo {
+public class LiveSolutionQueryMonitorAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -32,14 +32,11 @@ public class LiveWallQueryMonitorAPIDemo {
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
     private final static String SECRETKEY = "your_secret_key";
-    /**
-     * 业务ID，易盾根据产品业务特点分配
-     */
-    private final static String BUSINESSID = "your_business_id";
+
     /**
      * 易盾反垃圾云服务直播监控记录获取接口地址
      */
-    private final static String API_URL = "https://as.dun.163.com/v1/livewall/query/monitor";
+    private final static String API_URL = "https://as.dun.163.com/v1/livewallsolution/query/monitor";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -47,7 +44,7 @@ public class LiveWallQueryMonitorAPIDemo {
 
     public static void main(String[] args) throws Exception {
         // 1. 设置公共参数
-        Map<String, String> params = Utils.getCommonParams(SECRETID, BUSINESSID, "v1.0", "MD5");
+        Map<String, String> params = Utils.getCommonParams(SECRETID, null, "v1.0", "MD5");
         // 2. 设置私有参数
         params.put("taskId", "49db4e9dc56a424bb720fb46071532b4");
         // 预处理参数

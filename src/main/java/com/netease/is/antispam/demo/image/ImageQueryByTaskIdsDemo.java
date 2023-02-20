@@ -5,12 +5,20 @@
  */
 package com.netease.is.antispam.demo.image;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 import com.netease.is.antispam.demo.utils.Utils;
@@ -30,7 +38,7 @@ public class ImageQueryByTaskIdsDemo {
     /** 业务ID，易盾根据产品业务特点分配 */
     private final static String BUSINESSID = "your_business_id";
     /** 易盾反垃圾云服务文本結果查詢接口地址 */
-    private final static String API_URL = "http://as.dun.163.com/v1/image/query/task";
+    private final static String API_URL = "https://as.dun.163.com/v1/image/query/task";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 

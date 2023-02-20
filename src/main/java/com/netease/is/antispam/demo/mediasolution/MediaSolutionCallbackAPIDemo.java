@@ -41,7 +41,7 @@ public class MediaSolutionCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务点播音视频解决方案离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/mediasolution/callback/results";
+    private final static String API_URL = "https://as.dun.163.com/v1/mediasolution/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

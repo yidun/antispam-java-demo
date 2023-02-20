@@ -3,7 +3,7 @@
  *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.video;
+package com.netease.is.antispam.demo.videosolution;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ import com.netease.is.antispam.demo.utils.Utils;
  * @author yd-dev
  * @version 2020-04-22
  */
-public class LiveWallCallbackAPIDemo {
+public class LiveSolutionCallbackAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -36,14 +36,11 @@ public class LiveWallCallbackAPIDemo {
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
     private final static String SECRETKEY = "your_secret_key";
-    /**
-     * 业务ID，易盾根据产品业务特点分配
-     */
-    private final static String BUSINESSID = "your_business_id";
+
     /**
      * 易盾反垃圾云服务直播离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v3/livewall/callback/results";
+    private final static String API_URL = "https://as.dun.163.com/v3/livewallsolution/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -57,7 +54,6 @@ public class LiveWallCallbackAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("businessId", BUSINESSID);
         params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
@@ -83,30 +79,32 @@ public class LiveWallCallbackAPIDemo {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {
                 for (JsonElement jsonElement : resultArray) {
-                    JsonObject jObject = jsonElement.getAsJsonObject();
-                    // 直播电视墙uuid
-                    String taskId = jObject.get("taskId").getAsString();
-                    // 数据id
-                    String dataId = jObject.get("dataId").getAsString();
-                    // 回调参数
-                    String callback = jObject.get("callback").getAsString();
-                    // 状态
-                    int status = jObject.get("status").getAsInt();
-                    int censorSource = jObject.get("censorSource").getAsInt();
-                    int callbackStatus = jObject.get("callbackStatus").getAsInt();
-                    int riskLevel = jObject.get("riskLevel").getAsInt();
-                    int riskScore = jObject.get("riskScore").getAsInt();
-                    long duration = jObject.get("duration").getAsLong();
-                    System.out.println(String.format(
-                            "taskId:%s, dataId:%s, 回调信息:%s, 状态:%s, 审核来源=%s, 回调状态%s, 风险等级%s, 风险评分%s, 时长 %s s",
-                            taskId, dataId, callback, status, censorSource, callbackStatus, riskLevel, riskScore,
-                            duration));
-                    if (jObject.has("evidences")) {
-                        parseMachine(jObject.get("evidences").getAsJsonObject(), taskId);
-                    } else if (jObject.has("reviewEvidences")) {
-                        parseHuman(jObject.get("reviewEvidences").getAsJsonObject(), taskId);
-                    } else {
-                        System.out.println(String.format("Invalid Result: %s", jObject.toString()));
+                    JsonObject result = jsonElement.getAsJsonObject();
+                    if (result.has("antispam")) {
+                        JsonObject antispam = result.get("antispam").getAsJsonObject();
+                        // 直播电视墙uuid
+                        String taskId = antispam.get("taskId").getAsString();
+                        // 数据id
+                        String dataId = antispam.get("dataId").getAsString();
+                        // 回调参数
+                        String callback = antispam.get("callback").getAsString();
+                        // 状态
+                        int status = antispam.get("status").getAsInt();
+                        int censorSource = antispam.get("censorSource").getAsInt();
+                        int riskLevel = antispam.get("riskLevel").getAsInt();
+                        int riskScore = antispam.get("riskScore").getAsInt();
+                        long duration = antispam.has("duration") ? antispam.get("duration").getAsLong() : 0L;
+                        System.out.println(String.format(
+                                "taskId:%s, dataId:%s, 回调信息:%s, 状态:%s, 审核来源=%s, 风险等级%s, 风险评分%s, 时长 %s s",
+                                taskId, dataId, callback, status, censorSource, riskLevel, riskScore,
+                                duration));
+                        if (antispam.has("evidences")) {
+                            parseMachine(antispam.get("evidences").getAsJsonObject(), taskId);
+                        } else if (antispam.has("reviewEvidences")) {
+                            parseHuman(antispam.get("reviewEvidences").getAsJsonObject(), taskId);
+                        } else {
+                            System.out.println(String.format("Invalid Result: %s", antispam.toString()));
+                        }
                     }
                 }
             }
@@ -123,24 +121,9 @@ public class LiveWallCallbackAPIDemo {
      */
     private static void parseMachine(JsonObject evidences, String taskId) {
         System.out.println("=== 机审信息 ===");
-        JsonObject evidence = evidences.get("evidence").getAsJsonObject();
-        JsonArray labels = evidences.get("labels").getAsJsonArray();
-
-        int type = evidence.get("type").getAsInt();
-        String url = evidence.get("url").getAsString();
-        long beginTime = evidence.get("beginTime").getAsLong();
-        long endTime = evidence.get("endTime").getAsLong();
-
-        for (JsonElement jsonElement : labels) {
-            JsonObject callbackImageLabel = jsonElement.getAsJsonObject();
-            int label = callbackImageLabel.get("label").getAsInt();
-            int level = callbackImageLabel.get("level").getAsInt();
-            float rate = callbackImageLabel.get("rate").getAsFloat();
-            JsonArray subLabels = callbackImageLabel.get("subLabels").getAsJsonArray();
-        }
-
-        System.out.println(String.format("Machine Evidence: %s", evidence.toString()));
-        System.out.println(String.format("Machine Labels: %s", labels.toString()));
+        JsonObject audio = evidences.has("audio") ? evidences.get("audio").getAsJsonObject() : null;
+        JsonObject video = evidences.has("video") ? evidences.get("video").getAsJsonObject() : null;
+        System.out.println(String.format("Machine Evidence audio=%s, video=", audio, video));
         System.out.println("================");
     }
 

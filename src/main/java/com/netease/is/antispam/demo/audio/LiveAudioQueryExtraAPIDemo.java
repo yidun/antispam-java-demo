@@ -40,7 +40,7 @@ public class LiveAudioQueryExtraAPIDemo {
     /**
      * 易盾反垃圾云服务直播语音查询直播语音增值检测结果地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/liveaudio/query/extra";
+    private final static String API_URL = "https://as.dun.163.com/v1/liveaudio/query/extra";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

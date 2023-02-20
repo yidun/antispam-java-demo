@@ -41,7 +41,7 @@ public class MediaSolutionQueryV2APIDemo {
     /**
      * 融媒体解决方案回调查询接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v2/mediasolution/callback/query";
+    private final static String API_URL = "https://as.dun.163.com/v2/mediasolution/callback/query";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

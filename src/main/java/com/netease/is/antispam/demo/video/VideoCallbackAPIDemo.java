@@ -43,7 +43,7 @@ public class VideoCallbackAPIDemo {
     /**
      * 易盾反垃圾云服务视频离线结果获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v4/video/callback/results";
+    private final static String API_URL = "https://as.dun.163.com/v4/video/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

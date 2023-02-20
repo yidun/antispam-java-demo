@@ -3,7 +3,7 @@
  *
  * Copyright 2010 NetEase.com, Inc. All rights reserved.
  */
-package com.netease.is.antispam.demo.video;
+package com.netease.is.antispam.demo.videosolution;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ import com.netease.is.antispam.demo.utils.Utils;
  * @author hzgaomin
  * @version 2016年8月1日
  */
-public class LiveWallSubmitAPIDemo {
+public class LiveSolutionSubmitAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -34,14 +34,11 @@ public class LiveWallSubmitAPIDemo {
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
     private final static String SECRETKEY = "your_secret_key";
-    /**
-     * 业务ID，易盾根据产品业务特点分配
-     */
-    private final static String BUSINESSID = "your_business_id";
+
     /**
      * 易盾反垃圾云服务直播流信息提交接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v4/livevideo/submit";
+    private final static String API_URL = "https://as.dun.163.com/v3/livewallsolution/check";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -51,8 +48,7 @@ public class LiveWallSubmitAPIDemo {
         Map<String, String> params = new HashMap<String, String>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("businessId", BUSINESSID);
-        params.put("version", "v4");
+        params.put("version", "v3");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
@@ -62,6 +58,8 @@ public class LiveWallSubmitAPIDemo {
         params.put("url", "http://xxx.xxx.com/xxxx");
         params.put("dataId", "fbfcad1c-dba1-490c-b4de-e784c2691765");
         params.put("callback", "{\"p\":\"xx\"}");
+        // 设置去重key
+        params.put("uniqueKey", "uniqueKey");
         params.put("scFrequency", "5");
         // 主动回调地址url,如果设置了则走主动回调逻辑
         params.put("callbackUrl", "http://***");
@@ -81,9 +79,9 @@ public class LiveWallSubmitAPIDemo {
         String msg = jObject.get("msg").getAsString();
         if (code == 200) {
             JsonObject result = jObject.get("result").getAsJsonObject();
-            int status = result.get("status").getAsInt();
+            boolean status = result.get("status").getAsBoolean();
             String taskId = result.get("taskId").getAsString();
-            if (status == 0) {
+            if (status) {
                 System.out.println(String.format("推送成功! taskId=%s", taskId));
             } else {
                 System.out.println("推送失败!");
