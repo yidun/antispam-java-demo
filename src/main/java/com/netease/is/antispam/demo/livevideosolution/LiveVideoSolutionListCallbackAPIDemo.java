@@ -4,7 +4,7 @@
  * Copyright 2020 NetEase.com, Inc. All rights reserved.
  */
 
-package com.netease.is.antispam.demo.videosolution;
+package com.netease.is.antispam.demo.livevideosolution;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  * @author zhaojipu
  * @version 2023年02月07日
  */
-public class LiveSolutionListCallbackAPIDemo {
+public class LiveVideoSolutionListCallbackAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */

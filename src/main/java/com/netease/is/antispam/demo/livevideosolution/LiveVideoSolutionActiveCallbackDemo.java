@@ -1,4 +1,4 @@
-package com.netease.is.antispam.demo.videosolution;
+package com.netease.is.antispam.demo.livevideosolution;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +15,7 @@ import com.netease.is.antispam.demo.utils.SignatureUtils;
  */
 @RestController
 @RequestMapping("callback/receive")
-public class LiveSolutionActiveCallbackDemo {
+public class LiveVideoSolutionActiveCallbackDemo {
 
     /**
      * 产品密钥ID，产品标识

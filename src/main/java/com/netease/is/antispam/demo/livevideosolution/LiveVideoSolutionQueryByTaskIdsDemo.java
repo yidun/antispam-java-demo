@@ -6,12 +6,20 @@
 
 package com.netease.is.antispam.demo.livevideosolution;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 import com.netease.is.antispam.demo.utils.Utils;
@@ -46,7 +54,7 @@ public class LiveVideoSolutionQueryByTaskIdsDemo {
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
-params.put("signatureMethod", "MD5"); 
+        params.put("signatureMethod", "MD5");
 
         // 2.设置私有参数
         Set<String> taskIds = new HashSet<String>();
