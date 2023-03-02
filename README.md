@@ -13,8 +13,10 @@ http://dun.163.com
 ├── TextSubmitAPIDemo.java　文本批量提交接口演示
 ├── ImageCheckAPIDemo.java　图片在线检测接口演示
 ├── ImageCallbackDemo.java 图片离线结果获取接口演示
+├── ImageCallbackReceiveController.java 图片主动回调数据接收接口演示
 ├── ImageAsyncCheckAPIDemo.java　图片离线检测接口演示
 ├── ImageAsyncResultAPIDemo.java　图片离线检测结果获取接口演示
+├── ImageFeedBackAPIDemo.java　图片结果反馈接口演示
 ├── ImageListSubmitAPIDemo.java 图片名单添加接口演示
 ├── ImageListQueryAPIDemo.java 图片名单查询接口演示
 ├── ImageListDeleteAPIDemo.java 图片名单删除接口演示
@@ -26,6 +28,7 @@ http://dun.163.com
 ├── LiveAudioFeedbackAPIDemo.java 直播语音信息更新接口演示
 ├── LiveAudioQueryMonitorAPIDemo.java 直播语音人审操作记录获取接口演示
 ├── LiveAudioQueryTaskAPIDemo.java 直播语音片段离线结果获取接口演示
+├── LiveAudioListCallbackAPIDemo.java 直播语音名单获取接口演示
 ├── LiveVideoSubmitAPIDemo.java　直播流信息提交接口演示
 ├── LiveVideoCallbackAPIDemo.java 直播流检测结果获取接口演示
 ├── LiveVideoQueryByTaskIdsDemo.java 直播视频结果查询接口演示
@@ -53,6 +56,7 @@ http://dun.163.com
 ├── VideoSolutionSubmitApiDemo.java 点播音视频解决方案在线检测提交接口演示
 ├── VideoSolutionCallbackApiDemo.java 点播音视频解决方案检测结果获取接口演示
 ├── VideoSolutionQueryAPIDemo.java 点播音视频解决方案检测离线结果查询接口演示
+├── LiveSolutionListCallbackAPIDemo.java 直播音视频解决方案名单获取接口演示
 ├── LiveVideoSolutionSubmitAPIDemo.java 直播音视频解决方案检测提交接口演示
 ├── LiveVideoSolutionCallbackAPIDemo.java 直播音视频解决方案检测结果获取接口演示
 ├── LiveVideoSolutionQueryAudioAPIDemo.java 直播音视频解决方案音频片段结果获取接口演示
@@ -63,6 +67,13 @@ http://dun.163.com
 ├── KeywordDeleteAPIDemo.java 敏感词删除接口演示
 ├── KeywordQueryAPIDemo.java 敏感词查询接口演示
 ├── ListSubmitAPIDemo.java 名单提交接口演示
+├── ListUpdateAPIDemo.java 名单更新接口演示
+├── ListDeleteAPIDemo.java 名单删除接口演示
+├── ListQueryAPIDemo.java 名单查询接口演示
+├── PretreatmentAddAPIDemo.java 忽略词添加接口演示
+├── PretreatmentUpdateAPIDemo.java 忽略词更新接口演示
+├── PretreatmentDeleteAPIDemo.java 忽略词删除接口演示
+├── PretreatmentQueryAPIDemo.java 忽略词查询接口演示
 ├── CallbackReceiveController.java 主动回调数据接收接口演示
 ├── HttpClient4Utils.java httpclient封装类
 ├── DemoConstants.java 公共常量
