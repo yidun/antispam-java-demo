@@ -33,7 +33,7 @@ public class CrawlerCallbackAPIDemo {
     /** 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露 */
     private final static String SECRETKEY = "your_secret_key";
     /** 易盾反垃圾云服务文档检测结果获取接口地址 */
-    private final static String API_URL = "http://as.dun.163.com/v1/crawler/callback/results";
+    private final static String API_URL = "https://as.dun.163.com/v1/crawler/callback/results";
     /** 实例化HttpClient，发送http请求使用，可根据需要自行调参 */
     private static HttpClient httpClient = HttpClient4Utils.createHttpClient(100, 20, 10000, 2000, 2000);
 

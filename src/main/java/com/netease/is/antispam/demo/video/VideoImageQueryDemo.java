@@ -38,7 +38,7 @@ public class VideoImageQueryDemo {
     /**
      * 易盾反垃圾云服务视频截图查询获取接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/video/query/image";
+    private final static String API_URL = "https://as.dun.163.com/v1/video/query/image";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

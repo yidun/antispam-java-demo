@@ -1,7 +1,7 @@
 /*
- * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
+ * @(#) ListSubmitAPIDemo.java 2020-01-02
  *
- * Copyright 2019 NetEase.com, Inc. All rights reserved.
+ * Copyright 2020 NetEase.com, Inc. All rights reserved.
  */
 
 package com.netease.is.antispam.demo.audio;
@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import com.google.gson.JsonArray;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
@@ -17,15 +18,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务检测直播语音接口API示例
+ * 调用易盾反垃圾云服务名单批量提交接口API示例，该示例依赖以下jar包：
+ * 1. httpclient，用于发送http请求
+ * 2. commons-codec，使用md5算法生成签名信息，详细见SignatureUtils.java
+ * 3. gson，用于做json解析
+ * <p>
+ * 直播音频名单获取接口
  *
- * @author maxiaofeng
- * @version 2019-04-11
+ * @author zhaojipu
+ * @version 2023年02月07日
  */
-public class LiveAudioCheckAPIDemo {
+public class LiveAudioListCallbackAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -39,9 +44,9 @@ public class LiveAudioCheckAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务图片在线检测接口地址
+     * 易盾反垃圾云服务自定义用户名单查询接口地址
      */
-    private final static String API_URL = "https://as.dun.163.com/v4/liveaudio/check";
+    private final static String API_URL = "https://as.dun.163.com/v4/liveAccountList/callback/results";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -52,22 +57,15 @@ public class LiveAudioCheckAPIDemo {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        // 直播语音版本v2.1及以上二级细分类结构进行调整
-        params.put("version", "v4");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        // 加密方式可选 MD5, SM3, SHA1, SHA256
-        params.put("signatureMethod", "MD5");
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
+        params.put("version", "v4");
 
-        // 2.设置私有参数
-        params.put("url", "http://xxx.xx");
-
-        // 预处理参数
-        params = Utils.pretreatmentParams(params);
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
@@ -76,18 +74,12 @@ public class LiveAudioCheckAPIDemo {
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
         // 5.解析接口返回值
-        JsonObject jObject = new JsonParser().parse(response).getAsJsonObject();
-        int code = jObject.get("code").getAsInt();
-        String msg = jObject.get("msg").getAsString();
-        JsonObject result = jObject.get("result").getAsJsonObject();
+        JsonObject resultObject = new JsonParser().parse(response).getAsJsonObject();
+        int code = resultObject.get("code").getAsInt();
+        String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            String taskId = result.get("taskId").getAsString();
-            int status = result.get("status").getAsInt();
-            if (status == 0) {
-                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
-            } else {
-                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
-            }
+            JsonArray resultJson = resultObject.getAsJsonArray("result");
+            System.out.println(String.format("返回 %s", resultJson.toString()));
         } else {
             System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
         }

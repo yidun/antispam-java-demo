@@ -6,6 +6,15 @@
 
 package com.netease.is.antispam.demo.audio;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import org.apache.http.Consts;
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,14 +23,6 @@ import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
 import com.netease.is.antispam.demo.utils.Utils;
-import org.apache.http.Consts;
-import org.apache.http.client.HttpClient;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
 /**
  * 调用易盾反垃圾云服务查询点播语音结果接口API示例-v4版本
@@ -45,7 +46,7 @@ public class AudioQueryByTaskIdsV4Demo {
     /**
      * 易盾反垃圾云服务查询点播语音结果接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v4/audio/query/task";
+    private final static String API_URL = "https://as.dun.163.com/v4/audio/query/task";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

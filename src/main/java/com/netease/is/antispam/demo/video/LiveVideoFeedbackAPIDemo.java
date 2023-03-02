@@ -40,7 +40,7 @@ public class LiveVideoFeedbackAPIDemo {
     /**
      * 易盾反垃圾云服务直播视频信息更新接口地址
      */
-    private final static String API_URL = "http://as.dun.163.com/v1/livevideo/feedback";
+    private final static String API_URL = "https://as.dun.163.com/v1/livevideo/feedback";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */

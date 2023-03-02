@@ -1,5 +1,5 @@
 /*
- * @(#) LiveAudioCheckAPIDemo.java 2019-04-11
+ * @(#) AudioQueryByTaskIdsDemo.java 2019-04-11
  *
  * Copyright 2019 NetEase.com, Inc. All rights reserved.
  */
@@ -13,19 +13,17 @@ import java.util.Random;
 import org.apache.http.Consts;
 import org.apache.http.client.HttpClient;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.netease.is.antispam.demo.utils.HttpClient4Utils;
 import com.netease.is.antispam.demo.utils.SignatureUtils;
-import com.netease.is.antispam.demo.utils.Utils;
 
 /**
- * 调用易盾反垃圾云服务检测直播语音接口API示例
- *
- * @author maxiaofeng
- * @version 2019-04-11
+ * 调用易盾反垃圾云服务点播语音反馈接口API示例
  */
-public class LiveAudioCheckAPIDemo {
+public class AudioFeedbackAPIDemo {
     /**
      * 产品密钥ID，产品标识
      */
@@ -39,9 +37,9 @@ public class LiveAudioCheckAPIDemo {
      */
     private final static String BUSINESSID = "your_business_id";
     /**
-     * 易盾反垃圾云服务图片在线检测接口地址
+     * 易盾反垃圾云服务查询点播语音结果接口地址
      */
-    private final static String API_URL = "https://as.dun.163.com/v4/liveaudio/check";
+    private final static String API_URL = "https://as.dun.163.com/v1/audio/feedback";
     /**
      * 实例化HttpClient，发送http请求使用，可根据需要自行调参
      */
@@ -56,18 +54,19 @@ public class LiveAudioCheckAPIDemo {
         // 1.设置公共参数
         params.put("secretId", SECRETID);
         params.put("businessId", BUSINESSID);
-        // 直播语音版本v2.1及以上二级细分类结构进行调整
-        params.put("version", "v4");
+        params.put("version", "v1");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
-        // 加密方式可选 MD5, SM3, SHA1, SHA256
-        params.put("signatureMethod", "MD5");
+        params.put("signatureMethod", "MD5"); // MD5, SM3, SHA1, SHA256
 
         // 2.设置私有参数
-        params.put("url", "http://xxx.xx");
-
-        // 预处理参数
-        params = Utils.pretreatmentParams(params);
+        JsonArray feedbacks = new JsonArray();
+        JsonObject feedback = new JsonObject();
+        feedback.addProperty("taskId", "taskId");
+        feedback.addProperty("level", 2);
+        feedback.addProperty("label", 200);
+        feedbacks.add(feedback);
+        params.put("feedbacks", feedbacks.toString());
         // 3.生成签名信息
         String signature = SignatureUtils.genSignature(SECRETKEY, params);
         params.put("signature", signature);
@@ -76,20 +75,42 @@ public class LiveAudioCheckAPIDemo {
         String response = HttpClient4Utils.sendPost(httpClient, API_URL, params, Consts.UTF_8);
 
         // 5.解析接口返回值
-        JsonObject jObject = new JsonParser().parse(response).getAsJsonObject();
-        int code = jObject.get("code").getAsInt();
-        String msg = jObject.get("msg").getAsString();
-        JsonObject result = jObject.get("result").getAsJsonObject();
+        JsonObject resultObject = new JsonParser().parse(response).getAsJsonObject();
+        int code = resultObject.get("code").getAsInt();
+        String msg = resultObject.get("msg").getAsString();
         if (code == 200) {
-            String taskId = result.get("taskId").getAsString();
-            int status = result.get("status").getAsInt();
-            if (status == 0) {
-                System.out.println(String.format("SUBMIT SUCCESS: taskId=%s", taskId));
+            JsonArray results = resultObject.getAsJsonArray("result");
+            if (results == null || results.size() == 0) {
+                System.out.println("反馈结果 = " + results);
             } else {
-                System.out.println(String.format("SUBMIT FAIL: taskId=%s, status=%s", taskId, status));
+                for (JsonElement jsonElement : results) {
+                    JsonObject result = jsonElement.getAsJsonObject();
+                    String taskId = result.get("taskId").getAsString();
+                    int resultCode = result.get("result").getAsInt();
+                    System.out.printf("taskId=%s, result=%s%n", taskId, convertResultCode(resultCode));
+                }
             }
         } else {
-            System.out.println(String.format("ERROR: code=%s, msg=%s", code, msg));
+            System.out.printf("ERROR: code=%s, msg=%s%n", code, msg);
         }
+
     }
+
+    private static String convertResultCode(int resultCode) {
+        String desc = "";
+        switch (resultCode) {
+            case 0:
+                desc = "成功";
+                break;
+            case 1:
+                desc = "失败";
+                break;
+            case 2:
+                desc = "数据不存在";
+                break;
+            default:
+        }
+        return desc;
+    }
+
 }
