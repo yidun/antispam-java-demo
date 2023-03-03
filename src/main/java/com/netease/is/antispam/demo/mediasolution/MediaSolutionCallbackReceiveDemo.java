@@ -1,9 +1,3 @@
-/*
- * @(#) CrawlerResourceCallbackReceiveController.java 2023-03-03
- *
- * Copyright 2023 NetEase.com, Inc. All rights reserved.
- */
-
 package com.netease.is.antispam.demo.mediasolution;
 
 import com.google.gson.JsonArray;

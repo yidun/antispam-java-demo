@@ -1,9 +1,3 @@
-/*
- * @(#) DigitalBookQueryV2APIDemo.java 2021-09-03
- *
- * Copyright 2021 NetEase.com, Inc. All rights reserved.
- */
-
 package com.netease.is.antispam.demo.crawlersolution.v3;
 
 import com.google.gson.JsonArray;
@@ -22,10 +16,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * 数字阅读解决方案回调结果查询接口API示例-v2版本
- *
- * @author spring404
- * @version 2021-11-01
+ * 网站分页查询任务结果详情
  */
 public class CrawlerResourcePageQueryV3APIDemo {
 
@@ -38,7 +29,7 @@ public class CrawlerResourcePageQueryV3APIDemo {
      */
     private final static String SECRETKEY = "your_secret_key";
     /**
-     * 数字阅读解决方案回调结果查询接口地址
+     * 回调结果查询接口地址
      */
     private final static String API_URL = "https://as.dun.163.com/v1/crawler/callback-result/query";
     /**

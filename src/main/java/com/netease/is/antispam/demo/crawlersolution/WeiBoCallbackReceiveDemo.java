@@ -1,8 +1,3 @@
-/*
- * @(#) CrawlerResourceCallbackReceiveController.java 2023-03-03
- *
- * Copyright 2023 NetEase.com, Inc. All rights reserved.
- */
 
 package com.netease.is.antispam.demo.crawlersolution;
 
@@ -38,7 +33,7 @@ public class WeiBoCallbackReceiveDemo {
     private static final String BUSINESSID = "your_business_id";
 
     /**
-     * 图片回调数据接收接口demo
+     * 微博主动回调数据接收接口demo
      *
      * @param request
      * @throws UnsupportedEncodingException

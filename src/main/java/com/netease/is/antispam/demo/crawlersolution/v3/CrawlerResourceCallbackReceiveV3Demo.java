@@ -1,9 +1,3 @@
-/*
- * @(#) CrawlerResourceCallbackReceiveController.java 2023-03-03
- *
- * Copyright 2023 NetEase.com, Inc. All rights reserved.
- */
-
 package com.netease.is.antispam.demo.crawlersolution.v3;
 
 import com.google.gson.JsonArray;
@@ -39,7 +33,7 @@ public class CrawlerResourceCallbackReceiveV3Demo {
     private static final String BUSINESSID = "your_business_id";
 
     /**
-     * 网站但url回调数据接收接口demo
+     * 网站单url回调数据接收接口demo
      *
      * @param request
      * @throws UnsupportedEncodingException
