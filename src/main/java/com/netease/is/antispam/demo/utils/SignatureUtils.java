@@ -109,6 +109,35 @@ public class SignatureUtils {
         return genSignature(secretKey, params.get("signatureMethod"), params);
     }
 
+    public static String genOpenApiSignature(String secretKey, Map<String, String> params, Map<String, String> header) {
+        // 1. 参数名按照ASCII码表升序排序
+        String[] paramNames = params.keySet().toArray(new String[0]);
+        Arrays.sort(paramNames);
+
+        String timestamp = header.get("X-YD-TIMESTAMP");
+        String nonce = header.get("X-YD-NONCE");
+
+        // 2. 按照排序拼接参数名与参数值
+        StringBuilder paramBuffer = new StringBuilder();
+        for (String paramName : paramNames) {
+            String paramValue = params.get(paramName);
+
+            paramBuffer
+                    .append(paramName)
+                    .append(paramValue == null ? "" : paramValue);
+        }
+
+        // 3. 将secretKey，nonce，timestamp拼接到最后
+        paramBuffer.append(secretKey).append(nonce).append(timestamp);
+
+        try {
+            return DigestUtils.sha1Hex(paramBuffer.toString().getBytes("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("[ERROR] not supposed to happen: " + e.getMessage());
+        }
+        return "";
+    }
+
     /**
      * 通用签名方式
      * 
