@@ -11,6 +11,8 @@ http://dun.163.com
 ├── TextCallbackAPIDemo.java　文本离线结果获取接口演示
 ├── TextQueryByTaskIdsDemo.java　文本检测结果查询接口演示
 ├── TextSubmitAPIDemo.java　文本批量提交接口演示
+├── GrammarFixSubmitAPIDemo.java　文本纠错检测接口演示
+├── GrammarFixAsyncSubmitAPIDemo.java　文本纠错异步检测接口演示
 ├── ImageCheckAPIDemo.java　图片在线检测接口演示
 ├── ImageCallbackDemo.java 图片离线结果获取接口演示
 ├── ImageCallbackReceiveController.java 图片主动回调数据接收接口演示
