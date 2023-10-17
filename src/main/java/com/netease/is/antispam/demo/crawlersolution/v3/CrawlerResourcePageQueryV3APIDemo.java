@@ -41,15 +41,15 @@ public class CrawlerResourcePageQueryV3APIDemo {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v2");
+        params.put("version", "v1.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
         params.put("jobId", "123456");
-        params.put("pageSize", "10");
-        params.put("pageNo", "1");
+        params.put("pageSize", "20");
+        params.put("pageNum", "1");
         // 预处理参数
         params = Utils.pretreatmentParams(params);
         // 2.生成签名信息
@@ -63,8 +63,9 @@ public class CrawlerResourcePageQueryV3APIDemo {
         int code = resultObject.get("code").getAsInt();
         String msg = resultObject.get("msg").getAsString();
         if (code == DemoConstants.SUCCESS_CODE) {
-            Long count = resultObject.get("count").getAsLong();
-            JsonArray resultArray = resultObject.getAsJsonArray("rows");
+            JsonObject result = resultObject.get("result").getAsJsonObject();
+            Long count = result.get("count").getAsLong();
+            JsonArray resultArray = result.getAsJsonArray("rows");
             if (null == resultArray || resultArray.size() == 0 || count == 0) {
                 System.out.println("暂时没有结果需要获取，请稍后重试！");
             } else {

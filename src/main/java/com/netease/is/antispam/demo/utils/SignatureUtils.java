@@ -61,6 +61,33 @@ public class SignatureUtils {
     }
 
     /**
+     * 签名验证 解决方案没有businessId
+     *
+     * @param request
+     * @param secretid
+     * @param secretkey
+     * @return
+     */
+    public static boolean verifySignature(HttpServletRequest request, String secretid, String secretkey)
+            throws UnsupportedEncodingException {
+        String secretId = request.getParameter("secretId");
+        String signature = request.getParameter("signature");
+        if (StringUtils.isEmpty(secretId) || StringUtils.isEmpty(signature)) {
+            // 签名参数为空，直接返回失败
+            return false;
+        }
+        Map<String, String> params = new HashMap<>();
+        for (String paramName : request.getParameterMap().keySet()) {
+            if (!"signature".equals(paramName)) {
+                params.put(paramName, request.getParameter(paramName));
+            }
+        }
+        // SECRETKEY:产品私有密钥 SECRETID:产品密钥ID 开通服务时，易盾会提供相关密钥信息
+        String serverSignature = genSignature(secretkey, request.getParameter("signatureMethod"), params);
+        return signature.equals(serverSignature) && secretid.equals(secretId);
+    }
+
+    /**
      * 验证签名是否匹配
      *
      * @param requestParams 签名的参数
