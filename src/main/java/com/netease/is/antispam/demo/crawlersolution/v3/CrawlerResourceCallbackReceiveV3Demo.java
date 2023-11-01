@@ -27,10 +27,6 @@ public class CrawlerResourceCallbackReceiveV3Demo {
      * 产品私有密钥，服务端生成签名信息使用，请严格保管，避免泄露
      */
     private static final String SECRETKEY = "your_secret_key";
-    /**
-     * 业务ID，易盾根据产品业务特点分配
-     */
-    private static final String BUSINESSID = "your_business_id";
 
     /**
      * 网站单url回调数据接收接口demo
@@ -40,7 +36,7 @@ public class CrawlerResourceCallbackReceiveV3Demo {
      */
     @PostMapping(value = "/crawlerResource/callback/receive")
     public void crawlerResourceCallbackReceive(HttpServletRequest request) throws UnsupportedEncodingException {
-        boolean verifyFlag = verifySignature(request, SECRETID, SECRETKEY, BUSINESSID);
+        boolean verifyFlag = verifySignature(request, SECRETID, SECRETKEY);
         if (!verifyFlag) {
             throw new RuntimeException("signature verify failed");
         }
