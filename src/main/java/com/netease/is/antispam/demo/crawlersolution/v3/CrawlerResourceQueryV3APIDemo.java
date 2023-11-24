@@ -42,13 +42,13 @@ public class CrawlerResourceQueryV3APIDemo {
         Map<String, String> params = new HashMap<>(16);
         // 1.设置公共参数
         params.put("secretId", SECRETID);
-        params.put("version", "v2");
+        params.put("version", "v3.0");
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("nonce", String.valueOf(new Random().nextInt()));
         // MD5, SM3, SHA1, SHA256
         params.put("signatureMethod", "MD5");
 
-        params.put("taskIds", "['e0d3mq8dy16b6itm9q0oxodg05009qm1']");
+        params.put("taskIdList", "fc3b40e234c94ac5acf92adfd1b48a5a, 5589f2da3fa8472e9b446eed34e272a4");
         // 预处理参数
         params = Utils.pretreatmentParams(params);
         // 2.生成签名信息
