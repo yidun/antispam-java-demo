@@ -54,6 +54,9 @@ http://dun.163.com
 ├── MediaSolutionCallbackV2APIDemo.java 融媒体解决方案获取结果-轮询模式接口演示
 ├── MediaSolutionQueryV2APIDemo.java 融媒体解决方案回调查询接口演示
 ├── MediaSolutionCallbackReceiveDemo.java 融媒体解决方案主动回调接收演示
+├── AigcStreamCallbackAPIDemo.java AIGC流式检测结果获取接口演示
+├── AigcStreamCallbackReceiveDemo.java AIGC流式检测结果主动回调接收演示
+├── AigcStreamPushAPIDemo.java AIGC流式检测提交接口演示
 ├── DigitalBookSubmitV2APIDemo.java 数字阅读解决方案检测提交接口演示
 ├── DigitalBookCallbackV2APIDemo.java 数字阅读解决方案获取结果-轮询模式接口演示
 ├── DigitalBookQueryV2APIDemo.java 数字阅读解决方案回调查询接口演示
