@@ -1,5 +1,5 @@
 ## 网易易盾
-http://dun.163.com
+https://dun.163.com
 ## 接口说明
 
 - 文件说明
